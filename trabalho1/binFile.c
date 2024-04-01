@@ -2,6 +2,26 @@
 
 
 
+
+void csvToBin(char* filename){
+    initFile();
+    uint64_t offset = 25;
+    FILE *src = fopen(filename, "r");
+    FILE *data =  fopen("data.bin", "a+b");
+    PLAYER *player;
+    char tempstr[100]; 
+    fgets(tempstr, 100, src);
+    memset(tempstr, 0, 100);
+    while(fgets(tempstr, 100, src) != NULL){
+        player = parseLine(tempstr);
+        escreveRegistro(data, offset, player);
+        offset += playerTamanho(player) + 5;
+        memset(tempstr, 0, 100);
+    }
+    fclose(data);
+}
+
+
 void initFile(){
     FILE *data = fopen("data.bin", "w+b");
     int64_t temp8bytes;
@@ -43,5 +63,4 @@ void escreveRegistro(FILE* data, uint64_t offset, PLAYER* player){
     fwrite(&(player->clubeLen), 4, 1, data); //tamanho clube
     if(player->clubeLen > 0)
         fwrite((player->clube), 1,player->clubeLen, data);   
-    fclose(data);
 } 
