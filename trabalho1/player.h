@@ -4,6 +4,7 @@
     #include<stdlib.h>
     #include<string.h>
     #include<stdio.h>
+    #include<stdint.h>
     typedef struct _player PLAYER;
     PLAYER* playerInit();
     void playerSetIdade(PLAYER* p, int idade);
