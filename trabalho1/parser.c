@@ -15,6 +15,7 @@ PLAYER* parseLine(char *line){
     tempStr[j] = '\0';
     playerSetId(newPlayer, atoi(tempStr));
     j = 0; i++;
+    memset(tempStr, 0, 20);
     while((iterChar = line[i]) != ','){
         //loop para ler idade
         tempStr[j++] = iterChar;
@@ -23,6 +24,7 @@ PLAYER* parseLine(char *line){
     tempStr[j] = '\0';
     playerSetIdade(newPlayer, atoi(tempStr));
     j = 0; i++;
+    memset(tempStr, 0, 20);
     while((iterChar = line[i]) != ','){
         //loop para ler nome
         tempStr[j++] = iterChar;
@@ -31,6 +33,7 @@ PLAYER* parseLine(char *line){
     tempStr[j] = '\0';
     playerSetNome(newPlayer, tempStr);
     j = 0; i++;
+    memset(tempStr, 0, 20);
     while((iterChar = line[i]) != ','){
         //loop para ler pais
         tempStr[j++] = iterChar;
@@ -39,6 +42,7 @@ PLAYER* parseLine(char *line){
     tempStr[j] = '\0';
     playerSetPais(newPlayer, tempStr);
     j = 0; i++;
+    memset(tempStr, 0, 20);
     while((iterChar = line[i]) != '\n'){
         //loop para ler clube
         tempStr[j++] = iterChar;
@@ -49,8 +53,4 @@ PLAYER* parseLine(char *line){
     j = 0; i++;
 
     return newPlayer;
-}
-int main(){
-    char str[] = "247106,21,A. BERNABEI,ARGENTINA,CELTIC\n";
-    PLAYER* p = parseLine(str);
 }

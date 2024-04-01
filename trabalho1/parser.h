@@ -6,7 +6,7 @@
     #include<stdio.h>
     #include<stdint.h>
     #include"player.h"
-
+    PLAYER *parseLine(char *line);
 
 
 

@@ -7,7 +7,8 @@
     #include<stdint.h>
     #include"player.h"
     #include"parser.h"
-
+    void initFile();
+    void escreveRegistro(FILE* data, uint64_t offset, PLAYER* player);
 
 
 
