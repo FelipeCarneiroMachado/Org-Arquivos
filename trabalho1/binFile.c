@@ -35,7 +35,7 @@ void csvToBin(char* srcFile, char* destFile){
     while(fgets(tempstr, 100, src) != NULL){
         player = parseLine(tempstr);
         escreveRegistro(data, offset, player);
-        offset += playerTamanho(player) + 5;
+        offset += playerTamanho(player);
         memset(tempstr, 0, 100);
         playerFree(&player);
         nRegistros += 1;
@@ -73,12 +73,13 @@ void initFile(char* filename){
 
 //Escreve no arquivo a info de um jogador a partir da struct
 void escreveRegistro(FILE* data, uint64_t offset, PLAYER* player){
-    uint8_t tempByte = 0xFF;
+    uint8_t tempByte = 0;
     int64_t temp8bytes = -1;
     fseek(data, offset, SEEK_SET);
     fwrite(&tempByte, 1, 1, data); //removido
     size_t regSize = playerTamanho(player);
     fwrite(&regSize,4, 1, data); //tamanho do registro
+    fwrite(&temp8bytes, 8, 1, data); //prox offset
     fwrite(&(player->id), 4, 1, data); //id
     fwrite(&(player->idade), 4, 1, data);
     fwrite(&(player->nomeLen), 4, 1, data); //tamanho nome
