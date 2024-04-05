@@ -7,9 +7,10 @@
     #include<stdint.h>
     #include"player.h"
     #include"parser.h"
-    void initFile();
-    void csvToBin(char* filename);
+    void initFile(char* filename);
+    void csvToBin(char* srcFile, char* destFile);
     void escreveRegistro(FILE* data, uint64_t offset, PLAYER* player);
+    void setStatus(FILE *fd, uint8_t status);
 
 
 

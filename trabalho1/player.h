@@ -23,8 +23,9 @@
     void playerSetNome(PLAYER* p, char* nome);
     void playerSetClube(PLAYER* p, char* clube);
     void playerSetPais(PLAYER* p, char* pais);
-    int playerTamanho(PLAYER* p);
+    size_t playerTamanho(PLAYER* p);
     void playerPrint(PLAYER *p);
+    void playerFree(PLAYER** p);
 
 
 

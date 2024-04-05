@@ -2,12 +2,15 @@
 
 
 
-
-void csvToBin(char* filename){
-    initFile();
+//Converte o arquivo .csv para um binario, seguindo as especificacoes do trabalho
+void csvToBin(char* srcFile, char* destFile){
+    initFile(destFile);
     uint64_t offset = 25;
-    FILE *src = fopen(filename, "r");
-    FILE *data =  fopen("data.bin", "a+b");
+    uint32_t nRegistros = 0;
+    FILE *src = fopen(srcFile, "r");
+    FILE *data =  fopen(destFile, "r+b");
+    setStatus(data, 0);
+    fseek(data, offset, SEEK_SET);
     PLAYER *player;
     char tempstr[100]; 
     fgets(tempstr, 100, src);
@@ -17,13 +20,18 @@ void csvToBin(char* filename){
         escreveRegistro(data, offset, player);
         offset += playerTamanho(player) + 5;
         memset(tempstr, 0, 100);
+        playerFree(&player);
+        nRegistros += 1;
     }
+    setNumDeRegistros(data, nRegistros);
+    setProxOffset(data, offset);
     fclose(data);
+    fclose(src);
 }
 
-
-void initFile(){
-    FILE *data = fopen("data.bin", "w+b");
+//Inicializa o cabecalho do arquivo
+void initFile(char* filename){
+    FILE *data = fopen(filename, "w+b");
     int64_t temp8bytes;
     uint32_t temp4bytes;
     uint8_t tempByte = 1;
@@ -42,9 +50,25 @@ void initFile(){
     fwrite(&temp4bytes, 4, 1, data);
     fclose(data);
 }
+//altera o status do arquivo 
+void setStatus(FILE *fd, uint8_t status){
+    fseek(fd,0, SEEK_SET);
+    fwrite(&status, 1, 1, fd);
+}
+
+//Seta o numero de registros no cabecalho
+void setNumDeRegistros(FILE *fd, uint32_t num){
+    fseek(fd, 17, SEEK_SET);
+    fwrite(&num, 4, 1 ,fd);
+}
+//Seta o proximo offset livre no cabecalho
+void setProxOffset(FILE *fd, uint64_t num){
+    fseek(fd, 17, SEEK_SET);
+    fwrite(&num, 4, 1 ,fd);
+}
 
 
-
+//Escreve no arquivo a info de um jogador a partir da struct
 void escreveRegistro(FILE* data, uint64_t offset, PLAYER* player){
     uint8_t tempByte = 0;
     int64_t temp8bytes = -1;

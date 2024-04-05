@@ -2,7 +2,7 @@
 
 
 int main(){
-    csvToBin("Jogador.csv");
+    csvToBin("Jogador.csv", "data.bin");
 
 
 }
