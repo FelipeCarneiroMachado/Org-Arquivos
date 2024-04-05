@@ -1,4 +1,5 @@
 #ifndef BIN_H
+    //Este arquivo define as funcoes para manipular diretamente as informcoes do arquivo binario
     #define BIN_H
     #include<stdbool.h>
     #include<stdlib.h>

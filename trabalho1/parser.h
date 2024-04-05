@@ -1,4 +1,5 @@
 #ifndef H_PARSE
+    //Este arquivo contem as funcoes para transformar o texto do .csv em informacao binaria
     #define H_PARSE
     #include<stdbool.h>
     #include<stdlib.h>

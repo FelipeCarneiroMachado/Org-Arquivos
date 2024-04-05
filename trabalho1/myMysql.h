@@ -1,4 +1,5 @@
 #ifndef SQL_H
+    //Este arquivo define a interface com fragmentos da linguagem SQL para interrragir com o arquivo de dados
     #define SQL_H
     #include<stdbool.h>
     #include<stdlib.h>

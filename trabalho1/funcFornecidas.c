@@ -1,7 +1,4 @@
-#include"binFile.h"
-#include<ctype.h>
-
-//Arquivo main para testar o resto do codigo ao passo que se trabalha
+#include "funcoes_fornecidas.h"
 
 void binarioNaTela(char *nomeArquivoBinario) { /* Você não precisa entender o código dessa função. */
 
@@ -64,10 +61,4 @@ void scan_quote_string(char *str) {
 	} else { // EOF
 		strcpy(str, "");
 	}
-}
-
-int main(){
-    csvToBin("./casosTeste/arquivos/dado1.csv", "data.bin");
-    binarioNaTela("data.bin");
-
 }

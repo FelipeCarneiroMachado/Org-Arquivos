@@ -1,4 +1,5 @@
 #ifndef H_PLAYER
+    //Este arquivo e tem como objetivo realizar o manejo da struct que possui as informcoes do jogador
     #define H_PLAYER
     #include<stdbool.h>
     #include<stdlib.h>
