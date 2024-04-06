@@ -22,7 +22,7 @@ void setProxOffset(FILE *fd, uint64_t num){
 //Converte o arquivo .csv para um binario, seguindo as especificacoes do trabalho
 void csvToBin(char* srcFile, char* destFile){
     initFile(destFile);
-    uint64_t offset = 25;
+    uint64_t offset = 25;   
     uint32_t nRegistros = 0;
     FILE *src = fopen(srcFile, "r");
     FILE *data =  fopen(destFile, "r+b");
@@ -35,7 +35,7 @@ void csvToBin(char* srcFile, char* destFile){
     while(fgets(tempstr, 100, src) != NULL){
         player = parseLine(tempstr);
         escreveRegistro(data, offset, player);
-        offset += playerTamanho(player);
+        offset += playerTamanho(player) +5;
         memset(tempstr, 0, 100);
         playerFree(&player);
         nRegistros += 1;
@@ -51,8 +51,8 @@ void csvToBin(char* srcFile, char* destFile){
 void initFile(char* filename){
     FILE *data = fopen(filename, "w+b");
     int64_t temp8bytes;
-    uint32_t temp4bytes;
-    uint8_t tempByte = 1;
+    int32_t temp4bytes;
+    int8_t tempByte = 1;
     //Escreve o indicador de status
     fwrite(&tempByte, 1, 1, data);
     //Escreve o proximo logicamente removido
@@ -73,11 +73,11 @@ void initFile(char* filename){
 
 //Escreve no arquivo a info de um jogador a partir da struct
 void escreveRegistro(FILE* data, uint64_t offset, PLAYER* player){
-    uint8_t tempByte = 0;
+    int8_t tempByte = 0;
     int64_t temp8bytes = -1;
-    fseek(data, offset, SEEK_SET);
+    //fseek(data, offset, SEEK_SET);
     fwrite(&tempByte, 1, 1, data); //removido
-    size_t regSize = playerTamanho(player);
+    int32_t regSize = playerTamanho(player);
     fwrite(&regSize,4, 1, data); //tamanho do registro
     fwrite(&temp8bytes, 8, 1, data); //prox offset
     fwrite(&(player->id), 4, 1, data); //id

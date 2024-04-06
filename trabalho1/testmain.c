@@ -67,7 +67,9 @@ void scan_quote_string(char *str) {
 }
 
 int main(){
-    csvToBin("./casosTeste/arquivos/dado1.csv", "data.bin");
+	//char c[100];
+	//fgets(c, 100, stdin);
+    csvToBin("dado1.csv", "data.bin");
     binarioNaTela("data.bin");
 
 }
