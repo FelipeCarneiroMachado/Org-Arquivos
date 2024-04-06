@@ -69,7 +69,9 @@ void scan_quote_string(char *str) {
 int main(){
 	//char c[100];
 	//fgets(c, 100, stdin);
-    csvToBin("dado1.csv", "data.bin");
+	// PLAYER* p = parseLine("190653,,I. BRIZUELA,,\n");
+	// playerPrint(p);
+    csvToBin("./casosTeste/arquivos/dado2.csv", "data.bin");
     binarioNaTela("data.bin");
 
 }

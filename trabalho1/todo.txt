@@ -1,2 +1,1 @@
-Fiz o create table, p mim ta igual a especificacao, mas o checksum n bate, antes de continuar com o resto 
-precisa resolver isso, eu ja to enlouquecendo
+create table ta funcionando, agr eh fazer o select

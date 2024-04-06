@@ -22,7 +22,10 @@ PLAYER* playerInit(){
 }
 
 void playerSetIdade(PLAYER* p, int idade){
+    if(idade == 0)  
+        idade =  -1;
     p->idade = idade;
+
 }
 void playerSetId(PLAYER* p, int id){
     p->id = id;
@@ -51,7 +54,7 @@ void playerSetPais(PLAYER* p, char* pais){
     p->paisLen = len;
 }
 size_t playerTamanho(PLAYER* p){
-    int size = 28; //6 campos= 4 * 6 + 8 = 33 bytes
+    int size = 33; //6 campos= 4 * 6 + 8 = 33 bytes
     size += p->clubeLen + p->nomeLen + p->paisLen;
     return size;
 }
