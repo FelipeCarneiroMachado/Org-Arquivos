@@ -1,1 +1,3 @@
 create table ta funcionando, agr eh fazer o select
+
+matheus: daqui eu faço o slect e o where (fun 2 e 3)
