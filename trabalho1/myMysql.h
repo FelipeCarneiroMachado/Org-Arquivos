@@ -9,4 +9,6 @@
     #include"player.h"
     #include"binFile.h"
     #include"parser.h"
+    void selectSQL(char* filename);
+    void createTable(char* srcName, char* destName);
 #endif

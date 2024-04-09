@@ -1,1 +1,8 @@
-create table ta funcionando, agr eh fazer o select
+--SELECT WHERE
+
+FINAL
+--Arrumar formatcao de print
+--Tratamento de erro
+--Modularzizacao e documentacao
+--Video
+

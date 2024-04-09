@@ -1,5 +1,6 @@
 #include"binFile.h"
 #include<ctype.h>
+#include"myMysql.h"
 
 //Arquivo main para testar o resto do codigo ao passo que se trabalha
 
@@ -71,7 +72,9 @@ int main(){
 	//fgets(c, 100, stdin);
 	// PLAYER* p = parseLine("190653,,I. BRIZUELA,,\n");
 	// playerPrint(p);
-    csvToBin("./casosTeste/arquivos/dado2.csv", "data.bin");
-    binarioNaTela("data.bin");
-
+    // csvToBin("./casosTeste/arquivos/dado2.csv", "data.bin");
+    // binarioNaTela("data.bin");
+	
+	selectSQL("data.bin");
+	
 }

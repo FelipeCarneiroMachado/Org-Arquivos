@@ -8,7 +8,7 @@
     #include<stdint.h>
     #include"player.h"
     PLAYER *parseLine(char *line);
-
+    PLAYER* playerFromBin(FILE*fd, uint64_t offset);
 
 
 

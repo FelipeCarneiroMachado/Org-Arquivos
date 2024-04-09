@@ -1,5 +1,5 @@
 all:
-	gcc player.c parser.c -o main -g binFile.c testmain.c
+	gcc player.c myMysql.c parser.c -o main -g binFile.c testmain.c
 run:
 	./main
 clean:

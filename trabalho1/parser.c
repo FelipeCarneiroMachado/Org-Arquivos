@@ -69,3 +69,52 @@ PLAYER* parseLine(char *line){
 
     return newPlayer;
 }
+
+
+
+void slice(char * dest, char* src, int start, int end){
+    int k = 0;
+    for(int i = start; i < end; i++){
+        dest[k++] = src[i];
+    }
+    dest[k] = '\0';
+}
+
+PLAYER* playerFromBin(FILE*fd, uint64_t offset){
+    char regBuffer[120];
+    char fieldBuffer[50];
+    PLAYER* p = playerInit();
+    fseek(fd, offset, SEEK_SET);
+    fread(&regBuffer, 1, 120, fd);
+    int8_t status = regBuffer[0];
+    if(status != '0')
+        return NULL;
+    slice(fieldBuffer, regBuffer, 1, 5);
+    int32_t regSize;
+    memcpy(&regSize, fieldBuffer, 4);
+    slice(fieldBuffer, regBuffer, 5, 13);
+    int64_t prox;
+    memcpy(&prox, fieldBuffer, 8);
+    slice(fieldBuffer, regBuffer, 13, 17);
+    memcpy(&(p->id), fieldBuffer, 4);
+    slice(fieldBuffer, regBuffer, 17, 21);
+    memcpy(&(p->idade), fieldBuffer, 4);
+    slice(fieldBuffer, regBuffer, 21, 25);
+    memcpy(&(p->nomeLen), fieldBuffer, 4);
+    int off = 25 + p->nomeLen;
+    slice(fieldBuffer, regBuffer, 25, off);
+    playerSetNome(p, fieldBuffer);
+    //strcpy(p->nome, fieldBuffer);
+    slice(fieldBuffer, regBuffer, off, off + 4);
+    memcpy(&(p->paisLen), fieldBuffer, 4);
+    slice(fieldBuffer, regBuffer, off + 4, off + 4 + p->paisLen);
+    playerSetPais(p, fieldBuffer);
+    //strcpy(p->pais, fieldBuffer);
+    off += 4 + p->paisLen;
+    slice(fieldBuffer, regBuffer, off, off + 4);
+    memcpy(&(p->clubeLen), fieldBuffer, 4);
+    slice(fieldBuffer, regBuffer, off + 4, off + 4 + p->clubeLen);
+    playerSetClube(p, fieldBuffer);
+    //strcpy(p->clube, fieldBuffer);
+    return p;
+}
