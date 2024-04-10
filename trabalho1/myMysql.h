@@ -10,5 +10,6 @@
     #include"binFile.h"
     #include"parser.h"
     void selectSQL(char* filename);
+    void selectWhere(char* filename, int numOfParameters, char** fields, char** values);
     void createTable(char* srcName, char* destName);
 #endif

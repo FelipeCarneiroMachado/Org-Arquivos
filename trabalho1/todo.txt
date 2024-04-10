@@ -1,75 +1,14 @@
 --SELECT WHERE
-/*
-PLAYER* playerSelectWhere(FILE* fd, uint64_t offset, const char* field_name, const char* field_value) {
-    char regBuffer[120];
-    char fieldBuffer[50];
-    PLAYER* p = playerInit();
-    
-    fseek(fd, offset, SEEK_SET);
-    fread(&regBuffer, 1, 120, fd);
-    
-    int8_t status = regBuffer[0];
-    if(status != '0') {
-        return NULL;
-    }
-    
-    slice(fieldBuffer, regBuffer, 1, 5);
-    int32_t regSize;
-    memcpy(&regSize, fieldBuffer, 4);
-    
-    slice(fieldBuffer, regBuffer, 5, 13);
-    int64_t prox;
-    memcpy(&prox, fieldBuffer, 8);
-    
-    slice(fieldBuffer, regBuffer, 13, 17);
-    int id;
-    memcpy(&id, fieldBuffer, 4);
+Select where ta feito e funfando
 
-    if (strcmp(field_name, "id") == 0 && id != atoi(field_value)) {
-        return NULL;
-    }
 
-    p->id = id;
 
-    slice(fieldBuffer, regBuffer, 17, 21);
-    int idade;
-    memcpy(&idade, fieldBuffer, 4);
-    p->idade = idade;
-
-    slice(fieldBuffer, regBuffer, 21, 25);
-    int nomeLen;
-    memcpy(&nomeLen, fieldBuffer, 4);
-
-    int off = 25 + nomeLen;
-    slice(fieldBuffer, regBuffer, 25, off);
-    playerSetNome(p, fieldBuffer);
-
-    slice(fieldBuffer, regBuffer, off, off + 4);
-    int paisLen;
-    memcpy(&paisLen, fieldBuffer, 4);
-
-    slice(fieldBuffer, regBuffer, off + 4, off + 4 + paisLen);
-    playerSetPais(p, fieldBuffer);
-
-    off += 4 + paisLen;
-    slice(fieldBuffer, regBuffer, off, off + 4);
-    int clubeLen;
-    memcpy(&clubeLen, fieldBuffer, 4);
-
-    slice(fieldBuffer, regBuffer, off + 4, off + 4 + clubeLen);
-    playerSetClube(p, fieldBuffer);
-
-    return p;
-}
-*/
-
-tentei fazer o codigo do selectwhere (nao manjo muito de programar nesse nivel entao talvez tenha algo errado)
-mas não to conseguindo verificar se ta
-funcionando corretamente agora se puder verificar, voce eh muito brabo!
-
+TODO
+--Input da main (parte chata porem de boa)
+--Tem q fazer a main toda na real
 
 FINAL
---Arrumar formatcao de print
+--Arrumar formatcao de print -- feito
 --Tratamento de erro
 --Modularzizacao e documentacao
 --Video

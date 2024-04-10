@@ -18,6 +18,7 @@
         int clubeLen;
     };
     typedef struct _player PLAYER;
+    bool checkPlayer(PLAYER* p, int numOfParameters, char** fields, char** values);
     PLAYER* playerInit();
     void playerSetIdade(PLAYER* p, int idade);
     void playerSetId(PLAYER* p, int id);

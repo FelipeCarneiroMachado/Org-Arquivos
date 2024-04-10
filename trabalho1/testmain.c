@@ -72,9 +72,16 @@ int main(){
 	//fgets(c, 100, stdin);
 	// PLAYER* p = parseLine("190653,,I. BRIZUELA,,\n");
 	// playerPrint(p);
-    // csvToBin("./casosTeste/arquivos/dado2.csv", "data.bin");
-    // binarioNaTela("data.bin");
+    csvToBin("./casosTeste/arquivos/dado2.csv", "data.bin");
+    //binarioNaTela("data.bin");
+	char id[20] = "NACIONALIDADE\0", idVal[20] = "SPAIN\0";
+	char **par = malloc(8);
+	char **val = malloc(8);
+	par[0] = malloc(20);
+	val[0]= malloc(20);
+	strcpy(par[0], id);
+	strcpy(val[0], idVal);
+	selectWhere("data.bin", 1, par, val);
 	
-	selectSQL("data.bin");
 	
 }

@@ -34,6 +34,8 @@ void playerSetId(PLAYER* p, int id){
 //nao eh preocupacao do usuario deste header se preocupar com essa logistica
 void playerSetNome(PLAYER* p, char* nome){
     int len = strlen(nome);
+    if(len == 0)
+        return;
     char* nomeCp = (char*)malloc(len + 1);
     strcpy(nomeCp, nome);
     p->nome = nomeCp;
@@ -41,6 +43,8 @@ void playerSetNome(PLAYER* p, char* nome){
 }
 void playerSetClube(PLAYER* p, char* clube){
     int len = strlen(clube);
+    if(len == 0)
+        return;
     char* clubeCp = (char*)malloc(len + 1);
     strcpy(clubeCp, clube);
     p->clube = clubeCp;
@@ -48,6 +52,8 @@ void playerSetClube(PLAYER* p, char* clube){
 }
 void playerSetPais(PLAYER* p, char* pais){
     int len = strlen(pais);
+    if(len == 0)
+        return;
     char* paisCp = (char*)malloc(len + 1);
     strcpy(paisCp, pais);
     p->pais = paisCp;
@@ -59,8 +65,20 @@ size_t playerTamanho(PLAYER* p){
     return size;
 }
 void playerPrint(PLAYER *p){
-    printf("id %d\n idade %d\n nome e len %s %d\n pais e len %s %d\n clube e len %s %d", p->id, p->idade, p->nome, p->nomeLen, p->pais, p->paisLen, p->clube, p->clubeLen);
-}
+    if(p->nome != NULL)
+        printf("Nome do Jogador: %s\n", p->nome);
+    else
+        printf("Nome do Jogador: SEM DADO\n");
+    if(p->pais != NULL)
+        printf("Nacionalidade do Jogador: %s\n", p->pais);
+    else
+        printf("Nacionalidade do Jogador: SEM DADO\n");
+    if(p->clube != NULL)
+        printf("Clube do Jogador: %s\n\n", p->clube);
+    else
+        printf("Clube do Jogador: SEM DADO\n\n");
+    }
+
 void playerFree(PLAYER** p){
     if((*p)->nome != NULL)
         free((*p)->nome);
@@ -70,4 +88,28 @@ void playerFree(PLAYER** p){
         free((*p)->pais);
     free(*p);
     *p = NULL;
+}
+bool checkPlayer(PLAYER* p, int numOfParameters, char** fields, char** values){
+    for(int i = 0; i < numOfParameters; i++){
+        if(strcmp(fields[i], "id") == 0){
+            if(atoi(values[i]) != p->id)
+                return false; 
+        }
+        if(strcmp(fields[i], "idade") == 0)
+            if(atoi(values[i]) != p->idade)
+                return false;
+        if(strcmp(fields[i], "nome") == 0)
+            if(p->nome != NULL)
+                if(strcmp(values[i], p->nome) != 0)
+                    return false;
+        if(strcmp(fields[i], "NACIONALIDADE") == 0)
+            if(p->pais != NULL)
+                if(strcmp(values[i], p->pais) != 0)
+                    return false;
+        if(strcmp(fields[i], "clube") == 0)
+            if(p->clube != NULL)
+                if(strcmp(values[i], p->clube) != 0)
+                    return false;
+    }
+    return true;
 }
