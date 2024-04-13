@@ -93,6 +93,14 @@ void playerFree(PLAYER** p){
     free(*p);
     *p = NULL;
 }
+
+
+bool findPlayer(PLAYER* p, char* name){
+    if(strcmp(p->nome, name) == 0)
+        return true;
+    return false;
+}
+
 bool checkPlayer(PLAYER* p, int numOfParameters, char** fields, char** values){
     if(p->status == '1')
         return false;
@@ -104,18 +112,24 @@ bool checkPlayer(PLAYER* p, int numOfParameters, char** fields, char** values){
         if(strcmp(fields[i], "idade") == 0)
             if(atoi(values[i]) != p->idade)
                 return false;
-        if(strcmp(fields[i], "nome") == 0)
-            if(p->nome != NULL)
-                if(strcmp(values[i], p->nome) != 0)
-                    return false;
-        if(strcmp(fields[i], "nacionalidade") == 0)
-            if(p->pais != NULL)
-                if(strcmp(values[i], p->pais) != 0)
-                    return false;
-        if(strcmp(fields[i], "clube") == 0)
-            if(p->clube != NULL)
-                if(strcmp(values[i], p->clube) != 0)
-                    return false;
+        if(strcmp(fields[i], "nome") == 0){
+            if(p->nome == NULL)
+                return false;
+            if(strcmp(values[i], p->nome) != 0)
+                return false;
+        }
+        if(strcmp(fields[i], "nacionalidade") == 0){
+            if(p->pais == NULL)
+                return false;
+            if(strcmp(values[i], p->pais) != 0)
+                return false;
+        }
+        if(strcmp(fields[i], "nomeClube") == 0){
+            if(p->clube == NULL)
+                return false;
+            if(strcmp(values[i], p->clube) != 0)
+                return false;
+        }
     }
     return true;
 }

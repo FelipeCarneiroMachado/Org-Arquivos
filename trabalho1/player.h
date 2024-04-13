@@ -31,6 +31,7 @@
     size_t playerTamanho(PLAYER* p);
     void playerPrint(PLAYER *p);
     void playerFree(PLAYER** p);
+    bool findPlayer(PLAYER* p, char* name);
 
 
 

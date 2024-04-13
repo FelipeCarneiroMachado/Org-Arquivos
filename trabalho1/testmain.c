@@ -116,10 +116,11 @@ int main(){
 				char **fields = stringArray(5, 32);
 				char **values = stringArray(5, 32);
 				for(int i = 0; i < nOfQueries; i++){
+					printf("Busca %d\n\n", i + 1);
 					scanf("%d", &nOfFields);
 					for(int j = 0; j < nOfFields; j++){
 						scanf("%s", fields[j]);
-						if(strcmp(fields[j], "nome") == 0 || strcmp(fields[j], "clube") == 0 || strcmp(fields[j], "nacionalidade") == 0)
+						if(strcmp(fields[j], "nome") == 0 || strcmp(fields[j], "nomeClube") == 0 || strcmp(fields[j], "nacionalidade") == 0)
 							scan_quote_string(values[j]);
 						else
 							scanf("%s", values[j]);
