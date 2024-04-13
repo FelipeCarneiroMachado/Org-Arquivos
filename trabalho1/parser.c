@@ -51,7 +51,7 @@ PLAYER* parseLine(char *line){
     tempStr[j] = '\0';
     playerSetClube(newPlayer, tempStr);
     j = 0; i++;
-
+    playerTamanho(newPlayer);
     return newPlayer;
 }
 
@@ -72,14 +72,11 @@ PLAYER* playerFromBin(FILE*fd, uint64_t offset){
     fseek(fd, offset, SEEK_SET);
     fread(&regBuffer, 1, 120, fd);
     int8_t status = regBuffer[0];
-    if(status != '0')
-        return NULL;
+    p->status = regBuffer[0];
     slice(fieldBuffer, regBuffer, 1, 5);
-    int32_t regSize;
-    memcpy(&regSize, fieldBuffer, 4);
+    memcpy(&(p->tamanho), fieldBuffer, 4);
     slice(fieldBuffer, regBuffer, 5, 13);
-    int64_t prox;
-    memcpy(&prox, fieldBuffer, 8);
+    memcpy(&p->prox, fieldBuffer, 8);
     slice(fieldBuffer, regBuffer, 13, 17);
     memcpy(&(p->id), fieldBuffer, 4);
     slice(fieldBuffer, regBuffer, 17, 21);

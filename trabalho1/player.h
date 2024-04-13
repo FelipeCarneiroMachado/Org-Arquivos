@@ -8,14 +8,17 @@
     #include<stdint.h>
     //definicao da struct que contem as informacoes do jogador
     struct _player{
+        char status;
+        int64_t prox;
+        int32_t tamanho;
         int id;
         int idade;
-        char* nome;
         int nomeLen;
-        char *pais;
+        char* nome;
         int paisLen;
-        char* clube;
+        char *pais;
         int clubeLen;
+        char* clube;
     };
     typedef struct _player PLAYER;
     bool checkPlayer(PLAYER* p, int numOfParameters, char** fields, char** values);

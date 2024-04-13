@@ -42,7 +42,7 @@ void csvToBin(char* srcFile, char* destFile){
     }
     setStatus(data, '1');
     setNumDeRegistros(data, nRegistros);
-    setProxOffset(data, 0);
+    setProxOffset(data, offset);
     fclose(data);
     fclose(src);
 }

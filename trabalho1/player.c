@@ -10,6 +10,9 @@
 //Funcoes para uso externo
 PLAYER* playerInit(){
     PLAYER* newPlayer = (PLAYER*)malloc(sizeof(PLAYER));
+    newPlayer->status = '0';
+    newPlayer->prox = -1;
+    newPlayer->tamanho = 0;
     newPlayer->id = -1;
     newPlayer->idade = -1;
     newPlayer->clube = NULL;
@@ -62,6 +65,7 @@ void playerSetPais(PLAYER* p, char* pais){
 size_t playerTamanho(PLAYER* p){
     int size = 33; //6 campos= 4 * 6 + 8 = 33 bytes
     size += p->clubeLen + p->nomeLen + p->paisLen;
+    p->tamanho = size;
     return size;
 }
 void playerPrint(PLAYER *p){
@@ -90,6 +94,8 @@ void playerFree(PLAYER** p){
     *p = NULL;
 }
 bool checkPlayer(PLAYER* p, int numOfParameters, char** fields, char** values){
+    if(p->status == '1')
+        return false;
     for(int i = 0; i < numOfParameters; i++){
         if(strcmp(fields[i], "id") == 0){
             if(atoi(values[i]) != p->id)
@@ -102,7 +108,7 @@ bool checkPlayer(PLAYER* p, int numOfParameters, char** fields, char** values){
             if(p->nome != NULL)
                 if(strcmp(values[i], p->nome) != 0)
                     return false;
-        if(strcmp(fields[i], "NACIONALIDADE") == 0)
+        if(strcmp(fields[i], "nacionalidade") == 0)
             if(p->pais != NULL)
                 if(strcmp(values[i], p->pais) != 0)
                     return false;
