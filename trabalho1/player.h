@@ -6,11 +6,12 @@
     #include<string.h>
     #include<stdio.h>
     #include<stdint.h>
+    
     //definicao da struct que contem as informacoes do jogador
     struct _player{
         char status;
         int64_t prox;
-        int32_t tamanho;
+        int tamanho;
         int id;
         int idade;
         int nomeLen;
@@ -23,15 +24,17 @@
     typedef struct _player PLAYER;
     bool checkPlayer(PLAYER* p, int numOfParameters, char** fields, char** values);
     PLAYER* playerInit();
+    PLAYER *parseLine(char *line);
+    PLAYER* playerFromBin(FILE*fd, uint64_t offset);
     void playerSetIdade(PLAYER* p, int idade);
     void playerSetId(PLAYER* p, int id);
     void playerSetNome(PLAYER* p, char* nome);
     void playerSetClube(PLAYER* p, char* clube);
     void playerSetPais(PLAYER* p, char* pais);
-    size_t playerTamanho(PLAYER* p);
+    int playerTamanho(PLAYER* p);
     void playerPrint(PLAYER *p);
     void playerFree(PLAYER** p);
-    bool findPlayer(PLAYER* p, char* name);
+    
 
 
 

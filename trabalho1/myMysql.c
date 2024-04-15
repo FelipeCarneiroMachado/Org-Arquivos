@@ -24,6 +24,8 @@ void selectWhere(char* filename, int numOfParameters, char** fields, char** valu
         printf("Registro inexistente.\n\n");
 }
 
+
+
 void selectSQL(char* filename){
     FILE* fd =  fopen(filename, "rb");
     if(fd == NULL){
@@ -32,10 +34,13 @@ void selectSQL(char* filename){
     }
     bool flag =  false;
     //tratar cabecalho
+    HEADER *h = extraiHeader(fd);
     int64_t offset = 25;
     //fseek(fd, 25, SEEK_SET);
-    while(!feof(fd)){
+    while(!feof(fd) && h->offset > offset){
         PLAYER *p = playerFromBin(fd, offset);
+        if(strcmp(p->nome,  "M. RISTIC") == 0)
+            printf("parou");
         if(p->status == '0'){
             playerPrint(p);
             flag = true;
