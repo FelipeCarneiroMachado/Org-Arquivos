@@ -25,13 +25,15 @@ void selectWhere(char* filename, int numOfParameters, char** fields, char** valu
             playerPrint(p);
             flagFound = true;
             if(searchForId)
-                return;
+                break;
         }
         offset += playerTamanho(p);
         playerFree(&p);
     }
     if(!flagFound)
         printf("Registro inexistente.\n\n");
+    fclose(fd);
+    free(h);
 }
 
 
@@ -64,6 +66,9 @@ void selectSQL(char* filename){
     }
     if(!flag)
         printf("Registro inexistente.\n\n");
+    fclose(fd);
+    free(h);
+    
 }
 
 void createTable(char* srcName, char* destName){

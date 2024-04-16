@@ -15,6 +15,12 @@ char **stringArray(int n_str, int size_buffer){
 	return temp;
 }
 
+void freeStringArray(char*** array, int size){
+	for(int i = 0; i < size; i++)
+		free((*array)[i]);
+	free(*array);
+	*array = NULL;
+}
 
 int main(){
 	//char c[100];
@@ -66,13 +72,12 @@ int main(){
 					}
 					selectWhere(src, nOfFields, fields, values);
 				}
+				freeStringArray(&fields, 5);
+				freeStringArray(&values, 5);
 			default:
 				break;
+			
 		}
 	}
-	
-
-
-
 	
 }

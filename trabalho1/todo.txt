@@ -2,10 +2,10 @@ O codigo funciona, se for mexer no codigo faca sempre em branch separada
 
 --Etapas a partir de agora
 
---Otimizacao:
+--Otimizacao: (feito)
     Melhorar a eficiencia dos algoritmos, quase tudo feito
 
---Seguranca de memoria
+--Seguranca de memoria (ta feito)
     COrrigir todos os memory leaks, tem varios q eu fiz e so deixei p consertar dps, fala cmg q eu sei onde q tem uns
 
 --Nomes e documentacao
