@@ -9,9 +9,10 @@ void selectWhere(char* filename, int numOfParameters, char** fields, char** valu
         return;
     }
     //tratar cabecalho
+    HEADER *h = extraiHeader(fd);
     int64_t offset = 25;
     bool flag = false;
-    while(!feof(fd)){
+    while(h->offset > offset){
         PLAYER *p = playerFromBin(fd, offset);
         if(checkPlayer(p, numOfParameters, fields, values)){
             playerPrint(p);
@@ -39,8 +40,8 @@ void selectSQL(char* filename){
     //fseek(fd, 25, SEEK_SET);
     while(!feof(fd) && h->offset > offset){
         PLAYER *p = playerFromBin(fd, offset);
-        if(strcmp(p->nome,  "M. RISTIC") == 0)
-            printf("parou");
+        // if(strcmp(p->nome,  "M. RISTIC") == 0)
+        //     printf("parou");
         if(p->status == '0'){
             playerPrint(p);
             flag = true;

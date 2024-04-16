@@ -6,6 +6,7 @@
     #include<string.h>
     #include<stdio.h>
     #include<stdint.h>
+    #include"utils.h"
     
     //definicao da struct que contem as informacoes do jogador
     struct _player{

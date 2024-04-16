@@ -2,13 +2,7 @@
 
 //Funcoes internas
 
-void slicea(char * dest, char* src, int start, int end){
-    int k = 0;
-    for(int i = start; i < end; i++){
-        dest[k++] = src[i];
-    }
-    dest[k] = '\0';
-}
+
 //altera o status do arquivo 
 void setStatus(FILE *fd, uint8_t status){
     fseek(fd,0, SEEK_SET);
@@ -33,14 +27,18 @@ HEADER* extraiHeader(FILE *fd){
     char hBuffer[25], fBuffer[8];
     fread(hBuffer, 1, 25, fd);
     h->status = hBuffer[0];
-    slicea(fBuffer, hBuffer, 1, 9);
+    slice(fBuffer, hBuffer, 1, 9);
     memcpy(&(h->topo), fBuffer, 8);
-    slicea(fBuffer, hBuffer, 9, 17);
+    slice(fBuffer, hBuffer, 9, 17);
     memcpy(&(h->offset), fBuffer, 8);
-    slicea(fBuffer, hBuffer, 17, 21);
+    slice(fBuffer, hBuffer, 17, 21);
     memcpy(&(h->nReg), fBuffer, 4);
-    slicea(fBuffer, hBuffer, 21, 25);
+    slice(fBuffer, hBuffer, 21, 25);
     memcpy(&(h->nRem), fBuffer, 4);
+    if(h->offset == 0){
+        fseek(fd, 0, SEEK_END);
+        h->offset = ftell(fd);
+    }
     return h;
 }
 

@@ -7,6 +7,7 @@
     #include<stdio.h>
     #include<stdint.h>
     #include"player.h"
+    #include"utils.h"
     typedef struct _header{
         char status;
         int64_t topo;
