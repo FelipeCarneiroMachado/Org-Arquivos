@@ -1,15 +1,12 @@
---SELECT WHERE
-Select where ta feito e funfando
+O codigo funciona, se for mexer no codigo faca sempre em branch separada
 
+--Etapas a partir de agora
 
+--Otimizacao:
+    Melhorar a eficiencia dos algoritmos, quase tudo feito
 
-TODO
---Input da main (parte chata porem de boa)
---Tem q fazer a main toda na real
+--Seguranca de memoria
+    COrrigir todos os memory leaks, tem varios q eu fiz e so deixei p consertar dps, fala cmg q eu sei onde q tem uns
 
-FINAL
---Arrumar formatcao de print -- feito
---Tratamento de erro
---Modularzizacao e documentacao
---Video
-
+--Nomes e documentacao
+    Ultima coisa a se fazer, mudar o nome das coisas, embelezar o codigo e adicionar comentarios uteis
