@@ -62,7 +62,7 @@ void playerSetPais(PLAYER* p, char* pais){
     p->paisLen = len;
 }
 int playerTamanho(PLAYER* p){
-    int size = 33; //6 campos= 4 * 6 + 8 = 33 bytes
+    int size = 33; //tamanho fixo
     size += p->clubeLen + p->nomeLen + p->paisLen;
     p->tamanho = size;
     return size;
