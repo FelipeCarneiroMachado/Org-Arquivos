@@ -10,18 +10,27 @@ void selectWhere(char* filename, int numOfParameters, char** fields, char** valu
     }
     //tratar cabecalho
     HEADER *h = extraiHeader(fd);
+    if(h->status == '0'){
+        printf("\nArquivo de dados inconsistente\n");
+        return;
+    }
     int64_t offset = 25;
-    bool flag = false;
+    bool flagFound = false, searchForId = false;
+    for(int i = 0; i < numOfParameters; i++)
+        if(strcmp("id", fields[i]) == 0)
+            searchForId = true;
     while(h->offset > offset){
         PLAYER *p = playerFromBin(fd, offset);
         if(checkPlayer(p, numOfParameters, fields, values)){
             playerPrint(p);
-            flag = true;
+            flagFound = true;
+            if(searchForId)
+                return;
         }
         offset += playerTamanho(p);
         playerFree(&p);
     }
-    if(!flag)
+    if(!flagFound)
         printf("Registro inexistente.\n\n");
 }
 
@@ -36,6 +45,10 @@ void selectSQL(char* filename){
     bool flag =  false;
     //tratar cabecalho
     HEADER *h = extraiHeader(fd);
+    if(h->status == '0'){
+        printf("\nArquivo de dados inconsistente\n");
+        return;
+    }
     int64_t offset = 25;
     //fseek(fd, 25, SEEK_SET);
     while(!feof(fd) && h->offset > offset){
