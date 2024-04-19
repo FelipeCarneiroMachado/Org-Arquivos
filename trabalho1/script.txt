@@ -1,0 +1,16 @@
+nome da dupla, oq eh o video
+primordio de sustema gerenciador de banco de dados
+com funcionaidades,
+    1 - transformar um csv em binario
+    2 - retornar todos os registro do arquivo
+    3 - buscar por registros dadas condicoes
+Para manular os dados do registro foi criada a struct pllayer -> todas as funcoes de conversao entre texto, binario e struct estao noplaer .c
+1- ele itera pelas linhas do csv, transforma em struct e depois escreve no binario
+2- ele itera pelo arquivo, extrai uma struct por vez, um campo por vez e pritna, a nao ser que o registro estaja logicament removiffdo
+3 - itera iffgual o 2 mas passa a struct por por uma funcao que relaiza a checagem se eh valido
+sobre os aruqivois
+    player -> amnipula a struct
+    binfile _> manipulacao do binario
+    interface -> responavel pela interacao de alto nivel co a base
+    utiils -> utilidades e funcoes fornecidads
+    main - main
