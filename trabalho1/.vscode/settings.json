@@ -1,7 +1,8 @@
 {
     "files.associations": {
-        "algorithm": "c",
-        "*.tcc": "c",
-        "binfile.h": "c"
+        "mymysql.h": "c",
+        "binfile.h": "c",
+        "utils.h": "c",
+        "stdbool.h": "c"
     }
 }
