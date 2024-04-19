@@ -1,6 +1,9 @@
 #include"binFile.h"
-
-//Funcoes internas
+/*
+================================================
+Arquivo para manipulacao direta dos arquivos binarios
+================================================
+*/
 
 
 //altera o status do arquivo 
@@ -19,10 +22,10 @@ void setProxOffset(FILE *fd, uint64_t num){
     fseek(fd, 9, SEEK_SET);
     fwrite(&num, 4, 1 ,fd);
 }
-
+//Extrai as informacoes do header e poe na struct
 HEADER* extraiHeader(FILE *fd){
     HEADER* h = malloc(sizeof(HEADER));
-    if(ftell(fd) != 0)
+    if(ftell(fd) != 0) //acessa inicio do arquivo
         fseek(fd, 0, SEEK_SET);
     char hBuffer[25], fBuffer[8];
     fread(hBuffer, 1, 25, fd);
@@ -49,13 +52,15 @@ void csvToBin(char* srcFile, char* destFile){
     uint32_t nRegistros = 0;
     FILE *src = fopen(srcFile, "r");
     FILE *data =  fopen(destFile, "r+b");
+
     setStatus(data, '0');
     fseek(data, offset, SEEK_SET);
     PLAYER *player;
     char tempstr[100]; 
     fgets(tempstr, 100, src);
     memset(tempstr, 0, 100);
-    while(fgets(tempstr, 100, src) != NULL){
+
+    while(fgets(tempstr, 100, src) != NULL){ //itera pelo .csv
         player = parseLine(tempstr);
         escreveRegistro(data, offset, player);
         offset += playerTamanho(player);
@@ -63,6 +68,7 @@ void csvToBin(char* srcFile, char* destFile){
         playerFree(&player);
         nRegistros += 1;
     }
+
     setStatus(data, '1');
     setNumDeRegistros(data, nRegistros);
     setProxOffset(data, offset);
@@ -98,9 +104,9 @@ void initFile(char* filename){
 void escreveRegistro(FILE* data, uint64_t offset, PLAYER* player){
     int8_t tempByte = '0';
     int64_t temp8bytes = -1;
-    //fseek(data, offset, SEEK_SET);
     fwrite(&tempByte, 1, 1, data); //removido
     int32_t regSize = playerTamanho(player);
+    
     fwrite(&regSize,4, 1, data); //tamanho do registro
     fwrite(&temp8bytes, 8, 1, data); //prox offset
     fwrite(&(player->id), 4, 1, data); //id

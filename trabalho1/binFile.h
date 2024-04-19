@@ -1,5 +1,10 @@
+/*
+================================================
+Arquivo interface para manipulacao de binario
+================================================
+*/
+
 #ifndef BIN_H
-    //Este arquivo define as funcoes para manipular diretamente as informcoes do arquivo binario
     #define BIN_H
     #include<stdbool.h>
     #include<stdlib.h>
@@ -8,6 +13,7 @@
     #include<stdint.h>
     #include"player.h"
     #include"utils.h"
+    //struct para o header do arquivo binario
     typedef struct _header{
         char status;
         int64_t topo;

@@ -2,59 +2,30 @@
 #include"interface.h"	
 #include"utils.h"
 
-//Arquivo main para testar o resto do codigo ao passo que se trabalha
-
-
-
-
-char **stringArray(int n_str, int size_buffer){
-	char **temp = malloc(n_str * sizeof(char*));
-	for(int i = 0; i < n_str; i++){
-		temp[i] = malloc(size_buffer);
-	} 
-	return temp;
-}
-
-void freeStringArray(char*** array, int size){
-	for(int i = 0; i < size; i++)
-		free((*array)[i]);
-	free(*array);
-	*array = NULL;
-}
-
+/*
+================================================
+Arquivo main do projeto
+================================================
+*/
 int main(){
-	//char c[100];
-	//fgets(c, 100, stdin);
-	// PLAYER* p = parseLine("190653,,I. BRIZUELA,,\n");
-	// playerPrint(p);
-    //csvToBin("./casosTeste/arquivos/dado2.csv", "data.bin");
-    //binarioNaTela("data.bin");
-	// char id[20] = "NACIONALIDADE\0", idVal[20] = "SPAIN\0";
-	// char **par = malloc(8);
-	// char **val = malloc(8);
-	// par[0] = malloc(20);
-	// val[0]= malloc(20);
-	// strcpy(par[0], id);
-	// strcpy(val[0], idVal);
-	// selectWhere("data.bin", 1, par, val);
 	char commandBuffer[256];
 	char *src, *dest, *intBuffer;
 	int nOfQueries, nOfFields;
 	while (fgets(commandBuffer, 256, stdin) != NULL){
 		switch(commandBuffer[0]){
-			case '1':		
+			case '1':	//Criacao de tabela a partir de .csv (funcionalidade 1)	
 				strtok(commandBuffer, " ");
 				src = strtok(NULL, " ");
 				dest = strtok(NULL, "\n");
 				createTable(src, dest);
 				binarioNaTela(dest);
 				break;
-			case '2':
+			case '2':    //retornar todos os registros (funcionalidade 2)
 				strtok(commandBuffer, " ");
 				src = strtok(NULL, "\n");
 				selectAll(src);
 				break;
-			case '3':
+			case '3':    //retornar condicionalmente os registros (funcionalidade 3)
 				strtok(commandBuffer, " ");
 				src = strtok(NULL, " ");
 				nOfQueries = atoi(strtok(NULL, "\n"));

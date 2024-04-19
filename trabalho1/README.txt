@@ -1,3 +1,5 @@
-Arquivo zip gerado em: 03/04/2024 14:29:59 
-Este arquivo contém os casos de teste cadastrados até o momento, disponibilizado pelo professor aos alunos.
-Exercício: Trabalho Introdutório
+Trabalho prático introdutório da dsiciplina SCC0215 - Organização de Arquivos
+ICMC-USP, Primeiro semestre de 2024
+Realizado pela dupla:
+    Felipe Carneiro Machado - NUSP: 14569373
+    Matheus Araujo Pinheiro - NUSP: 1467810

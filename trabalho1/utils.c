@@ -1,11 +1,31 @@
 #include"utils.h"
-
+/*
+================================================
+Arquivo com as funcoes fornecidas e funcoes utlitarias diversas
+================================================
+*/
+//Corta um vetor dados 2 offsets e copia para outro (inclui start, exclui end)
 void slice(char * dest, char* src, int start, int end){
     int k = 0;
     for(int i = start; i < end; i++){
         dest[k++] = src[i];
     }
     dest[k] = '\0';
+}
+//Aloca um array de strings
+char **stringArray(int n_str, int size_buffer){
+	char **temp = malloc(n_str * sizeof(char*));
+	for(int i = 0; i < n_str; i++){
+		temp[i] = malloc(size_buffer);
+	} 
+	return temp;
+}
+//Libera a memoria de um array de strings
+void freeStringArray(char*** array, int size){
+	for(int i = 0; i < size; i++)
+		free((*array)[i]);
+	free(*array);
+	*array = NULL;
 }
 void binarioNaTela(char *nomeArquivoBinario) { /* Você não precisa entender o código dessa função. */
 
