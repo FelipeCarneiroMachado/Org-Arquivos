@@ -1,13 +1,16 @@
 #include"player.h"
-
-
-
-//Funcoes internas utilitarias
-
-
+/*
+================================================
+Arquivo fonte da struct PLAYER
+Aqui estao definidas todas as funcoes para manipulacao 
+dessa struct, incluindo conversao entre formatos (texto, binario no arquivo, struct)
+================================================
+*/
 
 //Funcoes para uso externo
+
 PLAYER* playerInit(){
+    //Aloca e inicializa a struct com valores propicios
     PLAYER* newPlayer = (PLAYER*)malloc(sizeof(PLAYER));
     newPlayer->status = '0';
     newPlayer->prox = -1;
@@ -24,7 +27,7 @@ PLAYER* playerInit(){
 }
 
 void playerSetIdade(PLAYER* p, int idade){
-    if(idade == 0)  
+    if(idade == 0)  //Lida com o caso nulo
         idade =  -1;
     p->idade = idade;
 
@@ -36,7 +39,7 @@ void playerSetId(PLAYER* p, int id){
 //nao eh preocupacao do usuario deste header se preocupar com essa logistica
 void playerSetNome(PLAYER* p, char* nome){
     int len = strlen(nome);
-    if(len == 0)
+    if(len == 0) //caso nulo
         return;
     char* nomeCp = (char*)malloc(len + 1);
     strcpy(nomeCp, nome);
@@ -44,7 +47,7 @@ void playerSetNome(PLAYER* p, char* nome){
     p->nomeLen = len;
 }
 void playerSetClube(PLAYER* p, char* clube){
-    int len = strlen(clube);
+    int len = strlen(clube); //caso nulo
     if(len == 0)
         return;
     char* clubeCp = (char*)malloc(len + 1);
@@ -53,7 +56,7 @@ void playerSetClube(PLAYER* p, char* clube){
     p->clubeLen = len;
 }
 void playerSetPais(PLAYER* p, char* pais){
-    int len = strlen(pais);
+    int len = strlen(pais); //caso nulo
     if(len == 0)
         return;
     char* paisCp = (char*)malloc(len + 1);
@@ -62,9 +65,9 @@ void playerSetPais(PLAYER* p, char* pais){
     p->paisLen = len;
 }
 int playerTamanho(PLAYER* p){
-    int size = 33; //tamanho fixo
+    int size = 33; //tamanho fixo = 1 + 8 + 6 * 4
     size += p->clubeLen + p->nomeLen + p->paisLen;
-    p->tamanho = size;
+    p->tamanho = size; //Retorna e seta o tamanho
     return size;
 }
 void playerPrint(PLAYER *p){
@@ -83,6 +86,7 @@ void playerPrint(PLAYER *p){
     }
 
 void playerFree(PLAYER** p){
+    //Liberacao de memoria, a struct deve ser passada por referencia
     if((*p)->nome != NULL)
         free((*p)->nome);
     if((*p)->clube != NULL)
@@ -95,7 +99,10 @@ void playerFree(PLAYER** p){
 
 
 bool checkPlayer(PLAYER* p, int numOfParameters, char** fields, char** values){
-    if(p->status == '1')
+    //Compara os campos de uma struct com uma lista de valores
+    //Recebe 2 arrays de strings, 1 com os campos a serem comparados e outro com os valores
+    //Os arrays devem ser pareados (campo[i] corresponde a valor[i])
+    if(p->status == '1')//Se o registro esta logicamente removido, retorna falso
         return false;
     for(int i = 0; i < numOfParameters; i++){
         if(strcmp(fields[i], "id") == 0){
@@ -127,8 +134,9 @@ bool checkPlayer(PLAYER* p, int numOfParameters, char** fields, char** values){
     return true;
 }
 PLAYER* parseLine(char *line){
+    //A partir de uma linha do .csv, gera uma struct com as informcoes
     PLAYER* newPlayer = playerInit();
-    char iterChar, tempStr[50];
+    char iterChar, tempStr[64];
     int i = 0, j = 0;
     while((iterChar = line[i]) != ','){
         //loop para ler id
@@ -138,7 +146,7 @@ PLAYER* parseLine(char *line){
     tempStr[j] = '\0';
     playerSetId(newPlayer, atoi(tempStr));
     j = 0; i++;
-    memset(tempStr, 0, 50);
+    memset(tempStr, 0, 64);
     while((iterChar = line[i]) != ','){
         //loop para ler idade
         tempStr[j++] = iterChar;
@@ -147,7 +155,7 @@ PLAYER* parseLine(char *line){
     tempStr[j] = '\0';
     playerSetIdade(newPlayer, atoi(tempStr));
     j = 0; i++;
-    memset(tempStr, 0, 50);
+    memset(tempStr, 0, 64);
     while((iterChar = line[i]) != ','){
         //loop para ler nome
         tempStr[j++] = iterChar;
@@ -156,7 +164,7 @@ PLAYER* parseLine(char *line){
     tempStr[j] = '\0';
     playerSetNome(newPlayer, tempStr);
     j = 0; i++;
-    memset(tempStr, 0, 50);
+    memset(tempStr, 0, 64);
     while((iterChar = line[i]) != ','){
         //loop para ler pais
         tempStr[j++] = iterChar;
@@ -165,7 +173,7 @@ PLAYER* parseLine(char *line){
     tempStr[j] = '\0';
     playerSetPais(newPlayer, tempStr);
     j = 0; i++;
-    memset(tempStr, 0, 50);
+    memset(tempStr, 0, 64);
     while((iterChar = line[i]) != '\n'){
         //loop para ler clube
         tempStr[j++] = iterChar;
@@ -183,38 +191,44 @@ PLAYER* parseLine(char *line){
 
 
 PLAYER* playerFromBin(FILE*fd, uint64_t offset){
-    char regBuffer[120];
-    char fieldBuffer[50]; //buffers teporarios
+    //Extrai uma struct de um binario no offset parametro
+    char regBuffer[128];
+    char *tempPtr;
+    char fieldBuffer[64]; //buffers teporarios
     PLAYER* p = playerInit();
-    if(ftell(fd) != offset)
+    if(ftell(fd) != offset) //Se o arquivo ja esta no offset, evita um seek
         fseek(fd, offset, SEEK_SET);
-    fread(regBuffer, 1, 5, fd);
+    fread(regBuffer, 1, 5, fd); //Primeiro fread = status e tamanho
     p->status = regBuffer[0];
-    slice(fieldBuffer, regBuffer, 1, 5);
-    memcpy(&(p->tamanho), fieldBuffer, 4);
-    fread(&regBuffer, 1, p->tamanho - 5, fd);
-    slice(fieldBuffer, regBuffer, 0, 8);
-    memcpy(&p->prox, fieldBuffer, 8);
-    slice(fieldBuffer, regBuffer, 8, 12);
-    memcpy(&(p->id), fieldBuffer, 4);
-    slice(fieldBuffer, regBuffer, 12, 16);
-    memcpy(&(p->idade), fieldBuffer, 4);
-    slice(fieldBuffer, regBuffer, 16, 20);
-    memcpy(&(p->nomeLen), fieldBuffer, 4);
+    tempPtr = regBuffer + 1;
+    memcpy(&(p->tamanho), tempPtr, 4); 
+    fread(&regBuffer, 1, p->tamanho - 5, fd); //fread no resto do registro
+    tempPtr = regBuffer;
+    memcpy(&p->prox, tempPtr, 8);
+    tempPtr += 8;
+    memcpy(&(p->id), tempPtr, 4);
+    tempPtr += 4;
+    memcpy(&(p->idade), tempPtr, 4);
+    tempPtr += 4;
+    memcpy(&(p->nomeLen), tempPtr, 4);
     int off = 20 + p->nomeLen;
-    slice(fieldBuffer, regBuffer, 20, off);
+    tempPtr += 4;
+    memset(fieldBuffer, 0, 64);
+    memcpy(fieldBuffer, tempPtr, p->nomeLen);
+    tempPtr += p->nomeLen;
     playerSetNome(p, fieldBuffer);
-    //strcpy(p->nome, fieldBuffer);
-    slice(fieldBuffer, regBuffer, off, off + 4);
-    memcpy(&(p->paisLen), fieldBuffer, 4);
-    slice(fieldBuffer, regBuffer, off + 4, off + 4 + p->paisLen);
+    memcpy(&(p->paisLen), tempPtr, 4);
+    tempPtr += 4;
+    memset(fieldBuffer, 0, 64);
+    memcpy(fieldBuffer, tempPtr, p->paisLen);
+    tempPtr += p->paisLen;
     playerSetPais(p, fieldBuffer);
-    //strcpy(p->pais, fieldBuffer);
+    memcpy(&(p->clubeLen), tempPtr, 4);
+    tempPtr += 4;
+    memset(fieldBuffer, 0, 64);
+    memcpy(fieldBuffer, tempPtr, p->clubeLen);
+    tempPtr += p->clubeLen;
     off += 4 + p->paisLen;
-    slice(fieldBuffer, regBuffer, off, off + 4);
-    memcpy(&(p->clubeLen), fieldBuffer, 4);
-    slice(fieldBuffer, regBuffer, off + 4, off + 4 + p->clubeLen);
     playerSetClube(p, fieldBuffer);
-    //strcpy(p->clube, fieldBuffer);
     return p;
 }
