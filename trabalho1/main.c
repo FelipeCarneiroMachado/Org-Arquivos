@@ -1,5 +1,5 @@
 #include"binFile.h"
-#include"myMysql.h"	
+#include"interface.h"	
 #include"utils.h"
 
 //Arquivo main para testar o resto do codigo ao passo que se trabalha
@@ -52,7 +52,7 @@ int main(){
 			case '2':
 				strtok(commandBuffer, " ");
 				src = strtok(NULL, "\n");
-				selectSQL(src);
+				selectAll(src);
 				break;
 			case '3':
 				strtok(commandBuffer, " ");

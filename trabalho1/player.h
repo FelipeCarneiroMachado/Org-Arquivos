@@ -1,5 +1,10 @@
+/*
+================================================
+Arquivo interface da struct PLAYER
+Aqui estao definida a interface e o formato da struct
+================================================
+*/
 #ifndef H_PLAYER
-    //Este arquivo e tem como objetivo realizar o manejo da struct que possui as informcoes do jogador
     #define H_PLAYER
     #include<stdbool.h>
     #include<stdlib.h>
@@ -23,19 +28,23 @@
         char* clube;
     };
     typedef struct _player PLAYER;
+    //Compara os campos de uma struct com uma lista de valores
     bool checkPlayer(PLAYER* p, int numOfParameters, char** fields, char** values);
+    //Recebe 2 arrays de strings, 1 com os campos a serem comparados e outro com os valores
+    //Os arrays devem ser pareados (campo[i] corresponde a valor[i])
     PLAYER* playerInit();
-    PLAYER *parseLine(char *line);
-    PLAYER* playerFromBin(FILE*fd, uint64_t offset);
+    PLAYER *parseLine(char *line); //A partir de uma linha do .csv, gera uma struct com as informacoes
+    PLAYER* playerFromBin(FILE*fd, uint64_t offset); //Extrai uma struct de um binario no offset parametro
     void playerSetIdade(PLAYER* p, int idade);
     void playerSetId(PLAYER* p, int id);
+    //Todas as funcoes que setam campos com strings criam copias das strings passadas como argumentos
+    //nao eh preocupacao do usuario deste header se preocupar com essa logistica
     void playerSetNome(PLAYER* p, char* nome);
     void playerSetClube(PLAYER* p, char* clube);
     void playerSetPais(PLAYER* p, char* pais);
-    int playerTamanho(PLAYER* p);
+    int playerTamanho(PLAYER* p); //Seta e retorna o tamanho
     void playerPrint(PLAYER *p);
-    void playerFree(PLAYER** p);
-    
+    void playerFree(PLAYER** p); //libera memoria, deve ser passado por referencia
 
 
 

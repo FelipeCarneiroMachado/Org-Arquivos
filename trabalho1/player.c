@@ -37,6 +37,8 @@ void playerSetId(PLAYER* p, int id){
 }
 //Todas as funcoes que setam campos com strings criam copias das strings passadas como argumentos
 //nao eh preocupacao do usuario deste header se preocupar com essa logistica
+
+// Escreve na struct on nome do jogador
 void playerSetNome(PLAYER* p, char* nome){
     int len = strlen(nome);
     if(len == 0) //caso nulo
@@ -46,6 +48,9 @@ void playerSetNome(PLAYER* p, char* nome){
     p->nome = nomeCp;
     p->nomeLen = len;
 }
+
+
+//Escreve na struct o clube do jogador
 void playerSetClube(PLAYER* p, char* clube){
     int len = strlen(clube); //caso nulo
     if(len == 0)
@@ -55,6 +60,7 @@ void playerSetClube(PLAYER* p, char* clube){
     p->clube = clubeCp;
     p->clubeLen = len;
 }
+// Escreve na struct a nacionalidade do jogador
 void playerSetPais(PLAYER* p, char* pais){
     int len = strlen(pais); //caso nulo
     if(len == 0)
@@ -134,7 +140,7 @@ bool checkPlayer(PLAYER* p, int numOfParameters, char** fields, char** values){
     return true;
 }
 PLAYER* parseLine(char *line){
-    //A partir de uma linha do .csv, gera uma struct com as informcoes
+    //A partir de uma linha do .csv, gera uma struct com as informacoes
     PLAYER* newPlayer = playerInit();
     char iterChar, tempStr[64];
     int i = 0, j = 0;
@@ -200,35 +206,33 @@ PLAYER* playerFromBin(FILE*fd, uint64_t offset){
         fseek(fd, offset, SEEK_SET);
     fread(regBuffer, 1, 5, fd); //Primeiro fread = status e tamanho
     p->status = regBuffer[0];
-    tempPtr = regBuffer + 1;
-    memcpy(&(p->tamanho), tempPtr, 4); 
+    tempPtr = regBuffer + 1; //ponteiro temporario, aponta para um offset dentro do buffer
+    memcpy(&(p->tamanho), tempPtr, 4); //Depois copia a informacao para a struct, realiza essa operacao para todos os campos
     fread(&regBuffer, 1, p->tamanho - 5, fd); //fread no resto do registro
     tempPtr = regBuffer;
-    memcpy(&p->prox, tempPtr, 8);
+    memcpy(&p->prox, tempPtr, 8); //leitura do prox
     tempPtr += 8;
-    memcpy(&(p->id), tempPtr, 4);
+    memcpy(&(p->id), tempPtr, 4);//leitura do id
     tempPtr += 4;
-    memcpy(&(p->idade), tempPtr, 4);
+    memcpy(&(p->idade), tempPtr, 4);//leitura da idade
     tempPtr += 4;
-    memcpy(&(p->nomeLen), tempPtr, 4);
-    int off = 20 + p->nomeLen;
+    memcpy(&(p->nomeLen), tempPtr, 4);//leitura do tamanho do nome
     tempPtr += 4;
     memset(fieldBuffer, 0, 64);
-    memcpy(fieldBuffer, tempPtr, p->nomeLen);
+    memcpy(fieldBuffer, tempPtr, p->nomeLen); //leitura do nome
     tempPtr += p->nomeLen;
     playerSetNome(p, fieldBuffer);
-    memcpy(&(p->paisLen), tempPtr, 4);
+    memcpy(&(p->paisLen), tempPtr, 4); //leitura do tamanho da nacionalidade
     tempPtr += 4;
     memset(fieldBuffer, 0, 64);
-    memcpy(fieldBuffer, tempPtr, p->paisLen);
+    memcpy(fieldBuffer, tempPtr, p->paisLen); //leitura da nacionalidade
     tempPtr += p->paisLen;
     playerSetPais(p, fieldBuffer);
-    memcpy(&(p->clubeLen), tempPtr, 4);
+    memcpy(&(p->clubeLen), tempPtr, 4); //leitura do tamanho do clube
     tempPtr += 4;
     memset(fieldBuffer, 0, 64);
-    memcpy(fieldBuffer, tempPtr, p->clubeLen);
+    memcpy(fieldBuffer, tempPtr, p->clubeLen); //leitura do clube
     tempPtr += p->clubeLen;
-    off += 4 + p->paisLen;
     playerSetClube(p, fieldBuffer);
     return p;
 }
