@@ -27,17 +27,18 @@ HEADER* extraiHeader(FILE *fd){
     HEADER* h = malloc(sizeof(HEADER));
     if(ftell(fd) != 0) //acessa inicio do arquivo
         fseek(fd, 0, SEEK_SET);
-    char hBuffer[25], fBuffer[8];
+    char hBuffer[25], *ptr;
     fread(hBuffer, 1, 25, fd);
+    ptr = hBuffer;
     h->status = hBuffer[0];
-    slice(fBuffer, hBuffer, 1, 9);
-    memcpy(&(h->topo), fBuffer, 8);
-    slice(fBuffer, hBuffer, 9, 17);
-    memcpy(&(h->offset), fBuffer, 8);
-    slice(fBuffer, hBuffer, 17, 21);
-    memcpy(&(h->nReg), fBuffer, 4);
-    slice(fBuffer, hBuffer, 21, 25);
-    memcpy(&(h->nRem), fBuffer, 4);
+    ptr += 1;
+    memcpy(&(h->topo), ptr, 8);
+    ptr += 8;
+    memcpy(&(h->offset), ptr, 8);
+    ptr += 8;
+    memcpy(&(h->nReg), ptr, 4);
+    ptr += 4;
+    memcpy(&(h->nRem), ptr, 4);
     if(h->offset == 0){
         fseek(fd, 0, SEEK_END);
         h->offset = ftell(fd);
