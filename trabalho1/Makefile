@@ -6,4 +6,4 @@ run:
 clean:
 	rm main
 zip:
-	zip Trabalho_Introdutorio_14569373_1467810.zip *.c *.h Makefile README.txt
+	zip Grupo12_TrabalhoIntrodutorio.zip *.c *.h Makefile README.txt
