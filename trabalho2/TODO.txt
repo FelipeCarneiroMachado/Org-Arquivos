@@ -1,0 +1,16 @@
+--Funcionalidades
+	Indexacao
+		-Criar arquivo pra index (todas as operacoes de construcao, reconstrucao, insercao, remocao e busca)
+		-Aplicar o index nas operacoes (buscas em disco)
+
+	Remocao
+		-Implementar logica da lista de espacos
+		-Implementar remocao logica
+
+
+	Insercao
+
+
+
+	Update
+		-Precisa da insercao
