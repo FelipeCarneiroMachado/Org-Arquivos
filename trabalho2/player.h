@@ -43,6 +43,7 @@ Aqui estao definida a interface e o formato da struct
     void playerSetClube(PLAYER* p, char* clube);
     void playerSetPais(PLAYER* p, char* pais);
     int playerTamanho(PLAYER* p); //Seta e retorna o tamanho
+    int* idFromBin(FILE* fd, uint64_t offset);
     void playerPrint(PLAYER *p);
     void playerFree(PLAYER** p); //libera memoria, deve ser passado por referencia
 

@@ -191,8 +191,25 @@ PLAYER* parseLine(char *line){
     playerTamanho(newPlayer);
     return newPlayer;
 }
-
-
+//Retorna um array onde [0] eh o id e [1] eh o tamanho
+int* idFromBin(FILE* fd, uint64_t offset){
+    //Esta funcao eh utilizada na criacao do indice, faz menos leituras que a playerFromBin
+    char status;
+    int id, size, *buffer;
+    buffer = malloc(8);
+    if(ftell(fd) != offset) //Se o arquivo ja esta no offset, evita um seek
+        fseek(fd, offset, SEEK_SET);
+    fread(&status, 1, 1, fd);
+    fread(&size, 4, 1, fd);
+    buffer[0] = size;
+    if(status == '1'){
+        buffer[0] = -1;
+    }
+    fseek(fd, 8, SEEK_CUR);
+    fread(&id, 4, 1, fd);
+    buffer[1] = id;
+    return buffer;
+}
 
 
 
@@ -208,7 +225,8 @@ PLAYER* playerFromBin(FILE*fd, uint64_t offset){
     p->status = regBuffer[0];
     tempPtr = regBuffer + 1; //ponteiro temporario, aponta para um offset dentro do buffer
     memcpy(&(p->tamanho), tempPtr, 4); //Depois copia a informacao para a struct, realiza essa operacao para todos os campos
-    fread(&regBuffer, 1, p->tamanho - 5, fd); //fread no resto do registro
+    int a = fread(&regBuffer, 1, p->tamanho - 5, fd); //fread no resto do registro
+    int b = ferror(fd);
     tempPtr = regBuffer;
     memcpy(&p->prox, tempPtr, 8); //leitura do prox
     tempPtr += 8;
