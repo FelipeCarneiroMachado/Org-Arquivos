@@ -13,6 +13,7 @@ Essecialmente, toda interacao com a base eh feita por este header
     #include<stdint.h>
     #include"player.h"
     #include"binFile.h"
+    #include"index.h"
     void selectAll(char* filename); //Printa todo o arquivo de dados
     //Recebe 2 arrays de strings, 1 com os campos a serem comparados e outro com os valores
     //Os arrays devem ser pareados (campo[i] corresponde a valor[i])

@@ -4,7 +4,7 @@
 Arquivo fonte da interface
 ================================================
 */
-
+INDEX *index = NULL;
 
 //Printa os registros que batem com as condicoes
 //Recebe 2 arrays de strings, 1 com os campos a serem comparados e outro com os valores
@@ -20,11 +20,25 @@ void selectWhere(char* filename, int numOfParameters, char** fields, char** valu
         printf("\nArquivo de dados inconsistente\n");
         return;
     }
+    if(index == NULL){
+        FILE *fd = fopen(filename, "rb+");
+        index = createIndex(fd);
+        fclose(fd);
+    }
+    int id;
     int64_t offset = 25; //Primeiro offset do arquivo
     bool flagFound = false, searchForId = false;
     for(int i = 0; i < numOfParameters; i++) //Id eh unico (chave primaria, se ele esta envolvido na busca eh parar mais cedo, economizando tempo)
-        if(strcmp("id", fields[i]) == 0)
+        if(strcmp("id", fields[i]) == 0){
             searchForId = true;
+            id = atoi(values[i]);
+        }
+    if(searchForId){
+        PLAYER *p = playerFromBin(fd, indexSearch(index, id));
+        playerPrint(p);
+        playerFree(p);
+        return;
+    }
     while(h->offset > offset){ //Itera sobre o arquivo
         PLAYER *p = playerFromBin(fd, offset);
         if(checkPlayer(p, numOfParameters, fields, values)){
@@ -81,4 +95,9 @@ void createTable(char* srcName, char* destName){
         return;
     }
     csvToBin(srcName, destName);
+    if(index == NULL){
+        FILE *fd = fopen(destName, "rb+");
+        index = createIndex(fd);
+        fclose(fd);
+    }
 }
