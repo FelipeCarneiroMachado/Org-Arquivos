@@ -113,3 +113,43 @@ int64_t indexSearchAux(struct data *arr, int target, int lo, int hi){
 int64_t indexSearch(INDEX* index, int id){
     return indexSearchAux(index->array, id, 0, index->nReg - 1);
 }
+
+
+
+int indexSearchPositionAux(struct data *arr, int target, int lo, int hi){
+    if(lo < hi){
+        int half = (lo + hi)/2; 
+        if(arr[half].id <= target && arr[half].id >= target)
+            return (lo + hi)/2;
+        if(arr[half].id > target)
+            return indexSearchAux(arr, target, lo, (lo + hi)/2);
+        if(arr[half].id < target)
+            return indexSearchAux(arr, target, ((lo + hi)/2) + 1, hi);
+    }
+    return -1;
+}
+
+int64_t indexSearchPosition(INDEX* index, int id){
+    if(index->array[0].id > id)
+        return 0;
+    if(index->array[index->nReg - 1].id > id)
+        return index->nReg - 1;
+    return indexSearchAux(index->array, id, 0, index->nReg - 1);
+}
+void shiftRight(INDEX* index, int pos){
+    for(int i = index->nReg - 1; i >= pos; i++){
+        index->array[i + 1] = index->array[i];
+    }
+}
+
+void indexInsert(INDEX *index, int id, int offset){
+    int indToInsert = indexSearchPosition(index, id);
+    shiftRight(index, indToInsert);
+    index->array[indToInsert].id = id; 
+    index->array[indToInsert].offset = offset;
+    index->nReg++;
+    if(index->nReg == index->arrLen){
+        index->arrLen *= 2;
+        index->array =(struct data*) realloc(i->array, i->arrLen * sizeof(struct data));
+    }
+}
