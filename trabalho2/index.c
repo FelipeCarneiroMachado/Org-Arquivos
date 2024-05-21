@@ -51,26 +51,32 @@ void printArr(INDEX *i){
     }
     fclose(fd);
 }
-//Cria o indice
+INDEX* indexInit(){
+    INDEX *i = (INDEX*)malloc(sizeof(INDEX));
+    i->nReg = 0;
+    i->arrLen = 50;
+    i->status = '1';
+    i->array = (struct data*)malloc(50 * sizeof(struct data));
+}
+
+//Cria o indice a partir do arquivo de dados
 INDEX* createIndex(FILE *fd){
     if(fd == NULL){
         printf("Falha no processamento do arquivo.\n");
         return NULL;
     }
-    //Alocacoes
-    INDEX *i = (INDEX*)malloc(sizeof(INDEX));
-    i->nReg = 0;
-    i->arrLen = BASE_SIZE;
-    i->status = '0';
-    i->array = (struct data*)malloc(BASE_SIZE * sizeof(struct data));
-    //Leitura de header
-    if(ftell(fd) != 0)
-        fseek(fd, 0, SEEK_SET);
     HEADER *h = extraiHeader(fd);
     if(h->status == '0'){
         printf("Falha no processamento do arquivo.\n");
         return NULL;
     }
+    //Alocacoes
+    INDEX *i = indexInit();
+    i->arrLen = h->nReg;
+    //Leitura de header
+    if(ftell(fd) != 0)
+        fseek(fd, 0, SEEK_SET);
+    
     //Itera pelo arquivo de dados
     uint64_t offset = 25;
     while(offset < h->offset){
@@ -115,7 +121,7 @@ int64_t indexSearch(INDEX* index, int id){
 }
 
 
-
+//Insercao no registro em memoria principal
 int indexSearchPositionAux(struct data *arr, int target, int lo, int hi){
     if(lo < hi){
         int half = (lo + hi)/2; 
@@ -150,6 +156,65 @@ void indexInsert(INDEX *index, int id, int offset){
     index->nReg++;
     if(index->nReg == index->arrLen){
         index->arrLen *= 2;
-        index->array =(struct data*) realloc(i->array, i->arrLen * sizeof(struct data));
+        index->array =(struct data*) realloc(index->array, index->arrLen * sizeof(struct data));
     }
+}
+
+
+//Funcoes de escrita do indice em arquivo de indice
+void writeIndexReg(struct data reg, FILE *fd, uint64_t offset){
+    if(ftell(fd) != offset)
+        fseek(fd, offset, SEEK_SET);
+    fwrite(&(reg.id), 4, 1, fd);
+    fwrite(&(reg.offset), 8, 1, fd);
+}
+
+void writeIndex(INDEX* index, char* filename){
+    FILE *fd = fopen(filename, "wb");
+    char tempByte = '0';
+    fwrite(&tempByte, 1, 1, fd);
+    for(int offset = 1, i = 0; i < index->nReg; offset += sizeof(struct data), i++){
+        writeIndexReg(index->array[i], fd, offset);
+    }
+    fseek(fd, 0, SEEK_SET);
+    tempByte = '1';
+    fwrite(&tempByte, 1, 1, fd);
+    fclose(fd);
+}
+
+//Funcoes de carregamento do indice
+
+INDEX *inconsistentIndexHandler(){
+    //Futuramente deve fazer a reconstrucao do indice
+    printf("Falha no processamento do arquivo.\n");
+    return NULL;
+}
+
+void indexRegFromBin(FILE *fd, struct data *reg, uint64_t offset){
+    if(ftell(fd) != offset)
+        fseek(fd, offset, SEEK_SET);
+    fread(&(reg->id), 4, 1, fd);
+    fread(&(reg->offset), 8, 1, fd);
+}
+
+INDEX* loadIndex(char *filename){
+    FILE *fd = fopen(filename, "rb");
+    INDEX *index = indexInit();
+    if(ftell(fd) != 0)
+        fseek(fd, 0, SEEK_SET);
+    char status;
+    fread(&status, 1, 1 ,fd);
+    if(status != '0')
+        return inconsistentIndexHandler();
+    uint64_t offset = 1;
+    while(!feof(fd)){
+        indexRegFromBin(fd, &(index->array[index->nReg]), offset);
+        index->nReg++;
+        if(index->nReg == index->arrLen){
+            index->arrLen *= 2;
+            index->array =(struct data*) realloc(index->array, index->arrLen * sizeof(struct data));
+        }
+    }
+    fclose(fd);
+    return index;
 }

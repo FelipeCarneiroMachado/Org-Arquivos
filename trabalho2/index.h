@@ -8,7 +8,6 @@
     #include"player.h"
     #include"utils.h"
     #include"binFile.h"
-    #define BASE_SIZE  50
     typedef struct index_{
         int8_t status;
         uint32_t nReg;
