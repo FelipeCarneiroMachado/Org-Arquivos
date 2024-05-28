@@ -11,8 +11,11 @@ Arquivo main do projeto
 ================================================
 */
 int main(){
+	FILE *bin = NULL;
+	HEADER *header = NULL;
+	INDEX* index = NULL;
 	char commandBuffer[256];
-	char *src, *dest, *intBuffer;
+	char *src, *dest, *intBuffer, indexName;
 	int nOfQueries, nOfFields;
 	while (fgets(commandBuffer, 256, stdin) != NULL){
 		switch(commandBuffer[0]){
@@ -48,6 +51,39 @@ int main(){
 				}
 				freeStringArray(&fields, 5);
 				freeStringArray(&values, 5);
+			case '4':
+				strtok(commandBuffer, " ");
+				src = strtok(NULL, " ");
+				indexName = strtok(NULL, "\n");
+				if(bin == NULL)
+					bin = fopen(src, "r+b");
+				index = createIndex(bin, indexName);
+				break;
+			case '5':
+				strtok(commandBuffer, " ");
+				src = strtok(NULL, " ");
+				if(bin == NULL)
+					bin == fopen(src ,"r+b");
+				nOfQueries = atoi(strtok(NULL, "\n"));
+				char **fields = stringArray(5, 32);
+				char **values = stringArray(5, 32);
+				for(int i = 0; i < nOfQueries; i++){
+					printf("Busca %d\n\n", i + 1);
+					scanf("%d", &nOfFields);
+					for(int j = 0; j < nOfFields; j++){
+						scanf("%s", fields[j]);
+						if(strcmp(fields[j], "nome") == 0 || strcmp(fields[j], "nomeClube") == 0 || strcmp(fields[j], "nacionalidade") == 0)
+							scan_quote_string(values[j]);
+						else
+							scanf("%s", values[j]);
+					}
+					delete(bin, index, nOfFields, fields, values);
+				}
+				fclose(bin);
+				binarioNaTela(src);
+				freeStringArray(&fields, 5);
+				freeStringArray(&values, 5);
+				break;
 			default:
 				break;
 			

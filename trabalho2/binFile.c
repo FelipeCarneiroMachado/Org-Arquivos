@@ -122,3 +122,57 @@ void escreveRegistro(FILE* data, uint64_t offset, PLAYER* player){
     if(player->clubeLen > 0)
         fwrite((player->clube), 1,player->clubeLen, data);   
 } 
+
+
+
+
+
+void removeInDisk(FILE* bin, HEADER* h , uint64_t offset){
+    PLAYER *toRemove = playerFromBin(bin, offset);
+    fseek(bin, offset, SEEK_SET);
+    char tempByte = '1';
+    fwrite(&tempByte, 1, 1, bin);
+    if(h->topo == -1){
+        fseek(bin, 1, SEEK_SET);
+        fwrite(&offset, 8, 1, bin);
+        h->topo = offset;
+        return;
+    }
+    uint64_t prevOff = 0, curOff = h->topo;
+    PLAYER *prev = NULL, *current = playerFromBin(bin, h->topo);
+    while(true){
+        if(toRemove->tamanho <= current->tamanho){
+            fseek(bin, offset + 5, SEEK_SET);
+            fwrite(&curOff, 8, 1, bin);
+            if(prev == NULL){
+                fseek(bin, 1, SEEK_SET);
+                int a = ftell(bin);
+                fwrite(&offset, 8, 1, bin);
+                h->topo = offset;
+            }
+            else{
+                fseek(bin, prevOff + 5, SEEK_SET);
+                fwrite(&offset, 8, 1, bin);
+                playerFree(&prev);
+            }
+            playerFree(&toRemove); playerFree(&current);
+            break;
+        }
+
+        if(prev != NULL)
+            playerFree(&prev);
+        prevOff = curOff;
+        curOff = current->prox;
+        prev = current;
+        if(curOff == -1){
+            fseek(bin, prevOff + 5, SEEK_SET);
+            fwrite(&offset, 8, 1, bin);
+            playerFree(&toRemove); playerFree(&prev);
+            break;
+        }
+        current = playerFromBin(bin, current->prox);
+    }
+
+
+
+}

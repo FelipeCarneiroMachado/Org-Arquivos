@@ -19,4 +19,5 @@ Essecialmente, toda interacao com a base eh feita por este header
     //Os arrays devem ser pareados (campo[i] corresponde a valor[i])
     void selectWhere(char* filename, int numOfParameters, char** fields, char** values); //Printa os registros que batem com as condicoes
     void createTable(char* srcName, char* destName); //cria o binario a partir de um csv
+    void delete(FILE* data, INDEX* index, int numOfParameters, char** fields, char** values);
 #endif

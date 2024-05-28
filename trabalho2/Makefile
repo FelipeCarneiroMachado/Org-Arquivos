@@ -9,3 +9,5 @@ clean:
 	rm main
 zip:
 	zip Grupo12_TrabalhoIntrodutorio.zip *.c *.h Makefile README.txt
+clearBin:
+	cp Entrada/binario1.bin Entrada/binarioTeste.bin

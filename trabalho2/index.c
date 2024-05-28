@@ -60,7 +60,7 @@ INDEX* indexInit(int base_len){
 }
 
 //Cria o indice a partir do arquivo de dados
-INDEX* createIndex(FILE *fd){
+INDEX* makeIndex(FILE *fd){
     FILE *log = fopen("log.log", "w");
     if(fd == NULL){
         printf("Falha no processamento do arquivo.\n");
@@ -110,6 +110,7 @@ INDEX* createIndex(FILE *fd){
     fflush(log);
     printArr(i);
     return i;
+    fclose(fd);
 }
 
 //Uma busca binaria simples
@@ -228,4 +229,16 @@ INDEX* loadIndex(char *filename){
     }
     fclose(fd);
     return index;
+}
+
+
+void shiftLeft(INDEX* index, int position){
+    for(int i = position; i < index->nReg - 1; i++)
+        index->array[i] = index->array[i+1];
+}
+
+void indexRemove(INDEX* index, int id){
+    int position = indexSearchPosition(index, id);
+    shiftLeft(index, position);
+    index->nReg--;
 }

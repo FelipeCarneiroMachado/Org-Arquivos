@@ -26,7 +26,7 @@ Arquivo interface para manipulacao de binario
     void csvToBin(char* srcFile, char* destFile);
     void escreveRegistro(FILE* data, uint64_t offset, PLAYER* player);
     void setStatus(FILE *fd, uint8_t status);
-
+    void removeInDisk(FILE* bin, HEADER* h , uint64_t offset);
 
 
 #endif
