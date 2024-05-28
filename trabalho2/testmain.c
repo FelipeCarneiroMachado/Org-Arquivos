@@ -2,6 +2,6 @@
 #include"index.h"
 
 int main(){
-    INDEX *i = createIndex(fopen("bin.bin", "r+b"));
-    printf("%d", indexSearch(i, 206594));
+    INDEX *i = createIndex(fopen("Entrada/binario1.bin", "r+b"));
+    writeIndex(i, "testi.bin");
 }

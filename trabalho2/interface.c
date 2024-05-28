@@ -4,7 +4,7 @@
 Arquivo fonte da interface
 ================================================
 */
-INDEX *index = NULL;
+INDEX *globalIndex;
 
 //Printa os registros que batem com as condicoes
 //Recebe 2 arrays de strings, 1 com os campos a serem comparados e outro com os valores
@@ -20,9 +20,9 @@ void selectWhere(char* filename, int numOfParameters, char** fields, char** valu
         printf("\nArquivo de dados inconsistente\n");
         return;
     }
-    if(index == NULL){
+    if(globalIndex == NULL){
         FILE *fd = fopen(filename, "rb+");
-        index = createIndex(fd);
+        globalIndex = createIndex(fd);
         fclose(fd);
     }
     int id;
@@ -34,9 +34,9 @@ void selectWhere(char* filename, int numOfParameters, char** fields, char** valu
             id = atoi(values[i]);
         }
     if(searchForId){
-        PLAYER *p = playerFromBin(fd, indexSearch(index, id));
+        PLAYER *p = playerFromBin(fd, indexSearch(globalIndex, id));
         playerPrint(p);
-        playerFree(p);
+        playerFree(&p);
         return;
     }
     while(h->offset > offset){ //Itera sobre o arquivo
@@ -95,9 +95,9 @@ void createTable(char* srcName, char* destName){
         return;
     }
     csvToBin(srcName, destName);
-    if(index == NULL){
-        FILE *fd = fopen(destName, "rb+");
-        index = createIndex(fd);
-        fclose(fd);
-    }
+    // if(globalIndex == NULL){
+    //     FILE *fd = fopen(destName, "rb+");
+    //     globalIndex = createIndex(fd);
+    //     fclose(fd);
+    // }
 }

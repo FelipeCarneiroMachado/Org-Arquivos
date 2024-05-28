@@ -19,6 +19,6 @@
     }INDEX;
     INDEX* createIndex(FILE *fd);
     int64_t indexSearch(INDEX* index, int id);
-
+    void writeIndex(INDEX* index, char* filename);
 
 #endif

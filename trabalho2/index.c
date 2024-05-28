@@ -45,22 +45,23 @@ void indexSort(INDEX* i){
 }
 //Printar para debug, printa num arquivo de log
 void printArr(INDEX *i){
-    FILE * fd = fopen("log.log", "w");
+    FILE * fd = fopen("log.log", "a");
     for(int j = 0; j < i->nReg - 1; j++){
         fprintf(fd, " (%d %d)  ", i->array[j].id, i->array[j].offset);
     }
     fclose(fd);
 }
-INDEX* indexInit(){
+INDEX* indexInit(int base_len){
     INDEX *i = (INDEX*)malloc(sizeof(INDEX));
     i->nReg = 0;
-    i->arrLen = 50;
+    i->arrLen = base_len;
     i->status = '1';
-    i->array = (struct data*)malloc(50 * sizeof(struct data));
+    i->array = (struct data*)malloc(base_len * sizeof(struct data));
 }
 
 //Cria o indice a partir do arquivo de dados
 INDEX* createIndex(FILE *fd){
+    FILE *log = fopen("log.log", "w");
     if(fd == NULL){
         printf("Falha no processamento do arquivo.\n");
         return NULL;
@@ -71,8 +72,7 @@ INDEX* createIndex(FILE *fd){
         return NULL;
     }
     //Alocacoes
-    INDEX *i = indexInit();
-    i->arrLen = h->nReg;
+    INDEX *i = indexInit(h->nReg);
     //Leitura de header
     if(ftell(fd) != 0)
         fseek(fd, 0, SEEK_SET);
@@ -80,24 +80,34 @@ INDEX* createIndex(FILE *fd){
     //Itera pelo arquivo de dados
     uint64_t offset = 25;
     while(offset < h->offset){
+        if(offset == 3156)
+            fprintf(log, "halt\n");
         int *p = idFromBin(fd, offset);//Recupera id e tamanho
         if(p[1] != -1){
             //Append na lista
             i->array[i->nReg].id = p[1];
             i->array[i->nReg].offset = offset;
             i->nReg++;
+            fprintf(log, "reg escrito %d / %ld\n", p[1], offset);
+            fflush(log);
         }
         //Logica de realocacao, sera removida dps pq tem jeito melhor
         if(i->nReg == i->arrLen){
             i->arrLen *= 2;
             i->array =(struct data*) realloc(i->array, i->arrLen * sizeof(struct data));
+            fprintf(log, "realocando: de %d para %d\n", i->arrLen /2, i->arrLen);
+            fflush(log);
         }
         offset += p[0];
         free(p);
         // if(i->nReg == 20)
         //     break;
     }
+    fprintf(log, "sort inciado\n");
+    fflush(log);
     indexSort(i);
+    fprintf(log, "sort concluido\n");
+    fflush(log);
     printArr(i);
     return i;
 }
@@ -180,6 +190,7 @@ void writeIndex(INDEX* index, char* filename){
     tempByte = '1';
     fwrite(&tempByte, 1, 1, fd);
     fclose(fd);
+    binarioNaTela(filename);
 }
 
 //Funcoes de carregamento do indice
@@ -199,7 +210,7 @@ void indexRegFromBin(FILE *fd, struct data *reg, uint64_t offset){
 
 INDEX* loadIndex(char *filename){
     FILE *fd = fopen(filename, "rb");
-    INDEX *index = indexInit();
+    INDEX *index = indexInit(100);
     if(ftell(fd) != 0)
         fseek(fd, 0, SEEK_SET);
     char status;

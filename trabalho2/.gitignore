@@ -4,3 +4,13 @@ log.log
 main
 t2.pdf
 Jogador.csv
+arquivos.zip
+in
+in/*
+out
+out/*
+Entrada
+Entrada/*
+Saída
+Saída;*
+testi.bin
