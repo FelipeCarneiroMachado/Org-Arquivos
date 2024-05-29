@@ -57,12 +57,10 @@ void updateHeader(FILE *bin, HEADER* h){
 
 
 //Converte o arquivo .csv para um binario, seguindo as especificacoes do trabalho
-void csvToBin(char* srcFile, char* destFile){
-    initFile(destFile);
+void csvToBin(FILE *src, FILE* data){
     uint64_t offset = 25;   
     uint32_t nRegistros = 0;
-    FILE *src = fopen(srcFile, "r");
-    FILE *data =  fopen(destFile, "wb");
+
 
     setStatus(data, '0');
     fseek(data, offset, SEEK_SET);
@@ -88,7 +86,7 @@ void csvToBin(char* srcFile, char* destFile){
 }
 
 //Inicializa o cabecalho do arquivo
-void initFile(char* filename){
+FILE* initFile(char* filename){
     FILE *data = fopen(filename, "wb");
     int64_t temp8bytes;
     int32_t temp4bytes;
@@ -106,14 +104,14 @@ void initFile(char* filename){
     fwrite(&temp4bytes, 4, 1, data);
     //Escreve o n de registros removidos logicamente
     fwrite(&temp4bytes, 4, 1, data);
-    fclose(data);
+    return data;
 }
 
 
 
 //Escreve no arquivo a info de um jogador a partir da struct
 void escreveRegistro(FILE* data, uint64_t offset, PLAYER* player){
-    if(ftell(data) != offset)
+    if(offset != NO_SEEK)
         fseek(data, offset, SEEK_SET);
     int8_t tempByte = '0';
     int64_t temp8bytes = -1;

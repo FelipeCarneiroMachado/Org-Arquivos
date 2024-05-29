@@ -59,14 +59,14 @@ INDEX* indexInit(int base_len){
     i->array = (struct data*)malloc(base_len * sizeof(struct data));
 }
 
+void indexFree(INDEX** i){
+    free((*i)->array);
+    free(*i);
+}
+
+
 //Cria o indice a partir do arquivo de dados
-INDEX* makeIndex(FILE *fd){
-    FILE *log = fopen("log.log", "w");
-    if(fd == NULL){
-        printf("Falha no processamento do arquivo.\n");
-        return NULL;
-    }
-    HEADER *h = extraiHeader(fd);
+INDEX* makeIndex(FILE *fd, HEADER* h){
     if(h->status == '0'){
         printf("Falha no processamento do arquivo.\n");
         return NULL;
@@ -74,43 +74,28 @@ INDEX* makeIndex(FILE *fd){
     //Alocacoes
     INDEX *i = indexInit(h->nReg);
     //Leitura de header
-    if(ftell(fd) != 0)
-        fseek(fd, 0, SEEK_SET);
-    
     //Itera pelo arquivo de dados
     uint64_t offset = 25;
+    if(ftell(fd) != offset)
+        fseek(fd, offset, SEEK_SET);
     while(offset < h->offset){
-        if(offset == 3156)
-            fprintf(log, "halt\n");
-        int *p = idFromBin(fd, offset);//Recupera id e tamanho
-        if(p[1] != -1){
+        PLAYER *p = playerFromBin(fd, NO_SEEK);//Recupera id e tamanho
+        if(p->status == '1'){
             //Append na lista
-            i->array[i->nReg].id = p[1];
+            i->array[i->nReg].id = p->id;
             i->array[i->nReg].offset = offset;
             i->nReg++;
-            fprintf(log, "reg escrito %d / %ld\n", p[1], offset);
-            fflush(log);
         }
-        //Logica de realocacao, sera removida dps pq tem jeito melhor
+        //Logica de realocacao
         if(i->nReg == i->arrLen){
             i->arrLen *= 2;
             i->array =(struct data*) realloc(i->array, i->arrLen * sizeof(struct data));
-            fprintf(log, "realocando: de %d para %d\n", i->arrLen /2, i->arrLen);
-            fflush(log);
         }
-        offset += p[0];
-        free(p);
-        // if(i->nReg == 20)
-        //     break;
+        offset += p->tamanho;
+        playerFree(&p);
     }
-    fprintf(log, "sort inciado\n");
-    fflush(log);
     indexSort(i);
-    fprintf(log, "sort concluido\n");
-    fflush(log);
-    printArr(i);
     return i;
-    fclose(fd);
 }
 
 //Uma busca binaria simples
@@ -174,7 +159,7 @@ void indexInsert(INDEX *index, int id, int offset){
 
 //Funcoes de escrita do indice em arquivo de indice
 void writeIndexReg(struct data reg, FILE *fd, uint64_t offset){
-    if(ftell(fd) != offset)
+    if(offset != NO_SEEK)
         fseek(fd, offset, SEEK_SET);
     fwrite(&(reg.id), 4, 1, fd);
     fwrite(&(reg.offset), 8, 1, fd);
@@ -185,13 +170,12 @@ void writeIndex(INDEX* index, char* filename){
     char tempByte = '0';
     fwrite(&tempByte, 1, 1, fd);
     for(int offset = 1, i = 0; i < index->nReg; offset += sizeof(struct data), i++){
-        writeIndexReg(index->array[i], fd, offset);
+        writeIndexReg(index->array[i], fd, NO_SEEK);
     }
     fseek(fd, 0, SEEK_SET);
     tempByte = '1';
     fwrite(&tempByte, 1, 1, fd);
     fclose(fd);
-    binarioNaTela(filename);
 }
 
 //Funcoes de carregamento do indice

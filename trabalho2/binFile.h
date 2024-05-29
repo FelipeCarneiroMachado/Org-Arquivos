@@ -13,6 +13,7 @@ Arquivo interface para manipulacao de binario
     #include<stdint.h>
     #include"player.h"
     #include"utils.h"
+    #define NO_SEEK -1
     //struct para o header do arquivo binario
     typedef struct _header{
         char status;
@@ -21,13 +22,14 @@ Arquivo interface para manipulacao de binario
         int nReg;
         int nRem;
     }HEADER;
-    void initFile(char* filename);
+    FILE* initFile(char* filename);
     HEADER* extraiHeader(FILE *fd);
-    void csvToBin(char* srcFile, char* destFile);
+    void csvToBin(FILE *src, FILE* data);
     void escreveRegistro(FILE* data, uint64_t offset, PLAYER* player);
     void setStatus(FILE *fd, uint8_t status);
     void removeInDisk(FILE* bin, HEADER* h , uint64_t offset);
     void insertPlayer(FILE *bin, HEADER *h, PLAYER* p);
+    void updateHeader(FILE *bin, HEADER* h)
 
 
 #endif

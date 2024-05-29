@@ -17,8 +17,9 @@
             int64_t offset; 
         }*array;
     }INDEX;
-    INDEX* makeIndex(FILE *fd);
+    INDEX* makeIndex(FILE *fd, HEADER* h);
     int64_t indexSearch(INDEX* index, int id);
+    void indexFree(INDEX** i);
     void writeIndex(INDEX* index, char* filename);
     void indexRemove(INDEX* index, int id);
 

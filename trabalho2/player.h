@@ -11,6 +11,7 @@ Aqui estao definida a interface e o formato da struct
     #include<string.h>
     #include<stdio.h>
     #include<stdint.h>
+    #include"binFile.h"
     #include"utils.h"
     
     //definicao da struct que contem as informacoes do jogador

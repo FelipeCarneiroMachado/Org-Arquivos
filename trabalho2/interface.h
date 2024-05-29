@@ -14,10 +14,11 @@ Essecialmente, toda interacao com a base eh feita por este header
     #include"player.h"
     #include"binFile.h"
     #include"index.h"
-    void selectAll(char* filename); //Printa todo o arquivo de dados
+    void selectAll(FILE* fd, HEADER* h); //Printa todo o arquivo de dados
     //Recebe 2 arrays de strings, 1 com os campos a serem comparados e outro com os valores
     //Os arrays devem ser pareados (campo[i] corresponde a valor[i])
-    void selectWhere(char* filename, int numOfParameters, char** fields, char** values); //Printa os registros que batem com as condicoes
-    void createTable(char* srcName, char* destName); //cria o binario a partir de um csv
+    void selectWhere(FILE* fd, HEADER* h, int numOfParameters, char** fields, char** values); //Printa os registros que batem com as condicoes
+    void createTable(FILE* csv, FILE* bin); //cria o binario a partir de um csv
     void delete(FILE* data, INDEX* index, int numOfParameters, char** fields, char** values);
+    INDEX* createIndex(FILE* bin, HEADER* h, char* indexName);
 #endif

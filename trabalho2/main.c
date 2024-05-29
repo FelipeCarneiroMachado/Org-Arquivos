@@ -11,7 +11,7 @@ Arquivo main do projeto
 ================================================
 */
 int main(){
-	FILE *bin = NULL;
+	FILE *bin = NULL, *csv = NULL;
 	HEADER *header = NULL;
 	INDEX* index = NULL;
 	char commandBuffer[256];
@@ -23,17 +23,33 @@ int main(){
 				strtok(commandBuffer, " ");
 				src = strtok(NULL, " ");
 				dest = strtok(NULL, "\n");
+				csv = fopen(src, "r");
+				bin = initFile(dest);
 				createTable(src, dest);
+				fclose(csv);
+				fclose(bin);
 				binarioNaTela(dest);
 				break;
 			case '2':    //retornar todos os registros (funcionalidade 2)
 				strtok(commandBuffer, " ");
 				src = strtok(NULL, "\n");
-				selectAll(src);
+				if((bin = fopen(src, "rb")) == NULL ){
+					printf("Falha no processamento do arquivo.\n");
+					break;
+				}
+				header = extraiHeader(bin);
+				selectAll(bin, header);
+				fclose(bin);
+				free(header);
 				break;
 			case '3':    //retornar condicionalmente os registros (funcionalidade 3)
 				strtok(commandBuffer, " ");
 				src = strtok(NULL, " ");
+				if((bin = fopen(src, "rb")) == NULL ){
+					printf("Falha no processamento do arquivo.\n");
+					break;
+				}
+				header = extraiHeader(bin);
 				nOfQueries = atoi(strtok(NULL, "\n"));
 				char **fields = stringArray(5, 32);
 				char **values = stringArray(5, 32);
@@ -47,7 +63,7 @@ int main(){
 						else
 							scanf("%s", values[j]);
 					}
-					selectWhere(src, nOfFields, fields, values);
+					selectWhere(bin, header, nOfFields, fields, values);
 				}
 				freeStringArray(&fields, 5);
 				freeStringArray(&values, 5);
@@ -55,9 +71,16 @@ int main(){
 				strtok(commandBuffer, " ");
 				src = strtok(NULL, " ");
 				indexName = strtok(NULL, "\n");
-				if(bin == NULL)
-					bin = fopen(src, "r+b");
-				index = createIndex(bin, indexName);
+				if((bin = fopen(src, "rb")) == NULL ){
+					printf("Falha no processamento do arquivo.\n");
+					break;
+				}
+				header = extraiHeader(bin);
+				index = createIndex(bin, header, indexName);
+				binarioNaTela(indexName);
+				fclose(bin);
+				free(header);
+				indexFree(&index);
 				break;
 			case '5':
 				strtok(commandBuffer, " ");

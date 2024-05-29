@@ -219,7 +219,7 @@ PLAYER* playerFromBin(FILE*fd, uint64_t offset){
     char *tempPtr;
     char fieldBuffer[64]; //buffers teporarios
     PLAYER* p = playerInit();
-    if(ftell(fd) != offset) //Se o arquivo ja esta no offset, evita um seek
+    if(offset != NO_SEEK) //Se o arquivo ja esta no offset, evita um seek
         fseek(fd, offset, SEEK_SET);
     fread(regBuffer, 1, 5, fd); //Primeiro fread = status e tamanho
     p->status = regBuffer[0];
