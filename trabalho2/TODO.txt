@@ -1,12 +1,6 @@
---Funcionalidades
-	Indexacao
-		-Criacao e busca feita
-		-Criar arquivo pra index (todas as operacoes de construcao, reconstrucao, insercao, remocao e busca)
-		-Aplicar o index nas operacoes (buscas em disco)
-
-	Remocao
-		-Implementar logica da lista de espacos
-		-Implementar remocao logica
-		
-		
-	Insercao
+Todas as Funcionalidades tao Implementadas basicamente, oq
+falta eh integrar na main e alterar as coisas q tiraram ponto no trabalho passado
+Agora a main vai ser responsavel por ter os ponteiros de arquivo, indice e header.
+Essa parte de alteracao eu faco
+Tu pode fazer a entrada da insercao? Meio chata mas n vai ser dificil, so fazer o case 6 no switch da main
+com os scanf e tal, tem q lidar com os NULO tbm.

@@ -46,13 +46,23 @@ HEADER* extraiHeader(FILE *fd){
     return h;
 }
 
+void updateHeader(FILE *bin, HEADER* h){
+    fseek(bin, 0, SEEK_SET);
+    fwrite(&(h->status), 1, 1, bin);
+    fwrite(&(h->topo), 8, 1, bin);
+    fwrite(&(h->offset), 8, 1, bin);
+    fwrite(&(h->nReg), 4, 1, bin);
+    fwrite(&(h->nRem), 4, 1, bin);
+}
+
+
 //Converte o arquivo .csv para um binario, seguindo as especificacoes do trabalho
 void csvToBin(char* srcFile, char* destFile){
     initFile(destFile);
     uint64_t offset = 25;   
     uint32_t nRegistros = 0;
     FILE *src = fopen(srcFile, "r");
-    FILE *data =  fopen(destFile, "r+b");
+    FILE *data =  fopen(destFile, "wb");
 
     setStatus(data, '0');
     fseek(data, offset, SEEK_SET);
@@ -79,7 +89,7 @@ void csvToBin(char* srcFile, char* destFile){
 
 //Inicializa o cabecalho do arquivo
 void initFile(char* filename){
-    FILE *data = fopen(filename, "w+b");
+    FILE *data = fopen(filename, "wb");
     int64_t temp8bytes;
     int32_t temp4bytes;
     int8_t tempByte = '1';
@@ -103,11 +113,12 @@ void initFile(char* filename){
 
 //Escreve no arquivo a info de um jogador a partir da struct
 void escreveRegistro(FILE* data, uint64_t offset, PLAYER* player){
+    if(ftell(data) != offset)
+        fseek(data, offset, SEEK_SET);
     int8_t tempByte = '0';
     int64_t temp8bytes = -1;
     fwrite(&tempByte, 1, 1, data); //removido
     int32_t regSize = playerTamanho(player);
-    
     fwrite(&regSize,4, 1, data); //tamanho do registro
     fwrite(&temp8bytes, 8, 1, data); //prox offset
     fwrite(&(player->id), 4, 1, data); //id
@@ -136,6 +147,8 @@ void removeInDisk(FILE* bin, HEADER* h , uint64_t offset){
         fseek(bin, 1, SEEK_SET);
         fwrite(&offset, 8, 1, bin);
         h->topo = offset;
+        h->nReg--;
+        h->nRem++;
         return;
     }
     uint64_t prevOff = 0, curOff = h->topo;
@@ -146,7 +159,6 @@ void removeInDisk(FILE* bin, HEADER* h , uint64_t offset){
             fwrite(&curOff, 8, 1, bin);
             if(prev == NULL){
                 fseek(bin, 1, SEEK_SET);
-                int a = ftell(bin);
                 fwrite(&offset, 8, 1, bin);
                 h->topo = offset;
             }
@@ -172,7 +184,55 @@ void removeInDisk(FILE* bin, HEADER* h , uint64_t offset){
         }
         current = playerFromBin(bin, current->prox);
     }
-
+        h->nReg--;
+        h->nRem++;
 
 
 }
+
+void insertPlayer(FILE *bin, HEADER *h, PLAYER* p){
+    if(h->topo == -1){
+        escreveRegistro(bin, h->offset, p);
+        h->nReg++;
+        return;
+    }
+    char cifrao =  '$';
+    PLAYER *prev = NULL, *current = playerFromBin(bin,h->topo);
+    int64_t prevOff = -1, curOff = h->topo;
+    while(true){
+        if(p->tamanho <= current->tamanho){
+            //Lidar edge cases
+            if(prev == NULL){
+                fseek(bin, 1, SEEK_SET);
+                fwrite(&(current->prox), 8, 1, bin);
+                escreveRegistro(bin, curOff, p);
+                for(int i = 0; i < p->tamanho - current->tamanho; i++)
+                    fwrite(&cifrao, 1, 1, bin);
+                h->nReg++;
+                h->nRem--;    
+                break;
+            }
+            fseek(bin, prevOff + 5, SEEK_SET);
+            fwrite(&(current->prox), 8, 1, bin);
+            escreveRegistro(bin, curOff, p);
+            for(int i = 0; i < current->tamanho - p->tamanho; i++)
+                fwrite(&cifrao, 1, 1, bin);
+            h->nReg++;
+            h->nRem--;
+            break;
+        }
+        if(prev != NULL)
+            playerFree(&prev);
+        prevOff = curOff;
+        curOff = current->prox;
+        prev = current;
+        if(curOff == -1){
+            escreveRegistro(bin, h->offset, p);
+            h->nReg++;
+            break;
+        }
+        current = playerFromBin(bin, current->prox);
+    }
+}
+
+
