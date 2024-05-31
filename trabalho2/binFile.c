@@ -7,18 +7,18 @@ Arquivo para manipulacao direta dos arquivos binarios
 
 
 //altera o status do arquivo 
-void setStatus(FILE *fd, uint8_t status){
+void setStatus(FILE *fd, int8_t status){
     fseek(fd,0, SEEK_SET);
     fwrite(&status, 1, 1, fd);
 }
 
 //Seta o numero de registros no cabecalho
-void setNumDeRegistros(FILE *fd, uint32_t num){
+void setNumDeRegistros(FILE *fd, int32_t num){
     fseek(fd, 17, SEEK_SET);
     fwrite(&num, 4, 1 ,fd);
 }
 //Seta o proximo offset livre no cabecalho
-void setProxOffset(FILE *fd, uint64_t num){
+void setProxOffset(FILE *fd, int64_t num){
     fseek(fd, 9, SEEK_SET);
     fwrite(&num, 4, 1 ,fd);
 }
@@ -58,8 +58,8 @@ void updateHeader(FILE *bin, HEADER* h){
 
 //Converte o arquivo .csv para um binario, seguindo as especificacoes do trabalho
 void csvToBin(FILE *src, FILE* data){
-    uint64_t offset = 25;   
-    uint32_t nRegistros = 0;
+    int64_t offset = 25;   
+    int32_t nRegistros = 0;
 
 
     setStatus(data, '0');
@@ -110,7 +110,7 @@ FILE* initFile(char* filename){
 
 
 //Escreve no arquivo a info de um jogador a partir da struct
-void escreveRegistro(FILE* data, uint64_t offset, PLAYER* player){
+void escreveRegistro(FILE* data, int64_t offset, PLAYER* player){
     if(offset != NO_SEEK)
         fseek(data, offset, SEEK_SET);
     int8_t tempByte = '0';
@@ -136,7 +136,7 @@ void escreveRegistro(FILE* data, uint64_t offset, PLAYER* player){
 
 
 
-void removeInDisk(FILE* bin, HEADER* h , uint64_t offset){
+void removeInDisk(FILE* bin, HEADER* h , int64_t offset){
     PLAYER *toRemove = playerFromBin(bin, offset);
     fseek(bin, offset, SEEK_SET);
     char tempByte = '1';
@@ -149,15 +149,13 @@ void removeInDisk(FILE* bin, HEADER* h , uint64_t offset){
         h->nRem++;
         return;
     }
-    uint64_t prevOff = 0, curOff = h->topo;
+    int64_t prevOff = 0, curOff = h->topo;
     PLAYER *prev = NULL, *current = playerFromBin(bin, h->topo);
     while(true){
-        if(toRemove->tamanho <= current->tamanho){
+        if(toRemove->tamanho < current->tamanho){
             fseek(bin, offset + 5, SEEK_SET);
             fwrite(&curOff, 8, 1, bin);
             if(prev == NULL){
-                fseek(bin, 1, SEEK_SET);
-                fwrite(&offset, 8, 1, bin);
                 h->topo = offset;
             }
             else{

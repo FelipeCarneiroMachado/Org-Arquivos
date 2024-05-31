@@ -1,4 +1,5 @@
 #include"player.h"
+#define NO_SEEK -1
 /*
 ================================================
 Arquivo fonte da struct PLAYER
@@ -139,6 +140,42 @@ bool checkPlayer(PLAYER* p, int numOfParameters, char** fields, char** values){
     }
     return true;
 }
+
+bool checkPlayerAll(PLAYER* p, int numOfParameters, char** fields, char** values){
+    //Compara os campos de uma struct com uma lista de valores
+    //Recebe 2 arrays de strings, 1 com os campos a serem comparados e outro com os valores
+    //Os arrays devem ser pareados (campo[i] corresponde a valor[i])
+    if(p->status == '1')//Se o registro esta logicamente removido, retorna falso
+        return false;
+    for(int i = 0; i < numOfParameters; i++){
+        if(strcmp(fields[i], "id") == 0){
+            if(atoi(values[i]) != p->id)
+                return false; 
+        }
+        if(strcmp(fields[i], "idade") == 0)
+            if(atoi(values[i]) != p->idade)
+                return false;
+        if(strcmp(fields[i], "nomeJogador") == 0){
+            if(p->nome == NULL)
+                return false;
+            if(strcmp(values[i], p->nome) != 0)
+                return false;
+        }
+        if(strcmp(fields[i], "nacionalidade") == 0){
+            if(p->pais == NULL)
+                return false;
+            if(strcmp(values[i], p->pais) != 0)
+                return false;
+        }
+        if(strcmp(fields[i], "nomeClube") == 0){
+            if(p->clube == NULL)
+                return false;
+            if(strcmp(values[i], p->clube) != 0)
+                return false;
+        }
+    }
+    return true;
+}
 PLAYER* parseLine(char *line){
     //A partir de uma linha do .csv, gera uma struct com as informacoes
     PLAYER* newPlayer = playerInit();
@@ -192,7 +229,7 @@ PLAYER* parseLine(char *line){
     return newPlayer;
 }
 //Retorna um array onde [0] eh o id e [1] eh o tamanho
-int* idFromBin(FILE* fd, uint64_t offset){
+int* idFromBin(FILE* fd, int64_t offset){
     //Esta funcao eh utilizada na criacao do indice, faz menos leituras que a playerFromBin
     char status;
     int id, size, *buffer;
@@ -213,7 +250,7 @@ int* idFromBin(FILE* fd, uint64_t offset){
 
 
 
-PLAYER* playerFromBin(FILE*fd, uint64_t offset){
+PLAYER* playerFromBin(FILE*fd, int64_t offset){
     //Extrai uma struct de um binario no offset parametro
     char regBuffer[128];
     char *tempPtr;
@@ -225,8 +262,7 @@ PLAYER* playerFromBin(FILE*fd, uint64_t offset){
     p->status = regBuffer[0];
     tempPtr = regBuffer + 1; //ponteiro temporario, aponta para um offset dentro do buffer
     memcpy(&(p->tamanho), tempPtr, 4); //Depois copia a informacao para a struct, realiza essa operacao para todos os campos
-    int a = fread(&regBuffer, 1, p->tamanho - 5, fd); //fread no resto do registro
-    int b = ferror(fd);
+    fread(&regBuffer, 1, p->tamanho - 5, fd); //fread no resto do registro
     tempPtr = regBuffer;
     memcpy(&p->prox, tempPtr, 8); //leitura do prox
     tempPtr += 8;

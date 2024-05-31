@@ -14,3 +14,6 @@ Entrada/*
 Saída
 Saída;*
 testi.bin
+*.log
+env
+env/*

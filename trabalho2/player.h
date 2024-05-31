@@ -11,7 +11,7 @@ Aqui estao definida a interface e o formato da struct
     #include<string.h>
     #include<stdio.h>
     #include<stdint.h>
-    #include"binFile.h"
+    //#include"binFile.h"
     #include"utils.h"
     
     //definicao da struct que contem as informacoes do jogador
@@ -35,7 +35,7 @@ Aqui estao definida a interface e o formato da struct
     //Os arrays devem ser pareados (campo[i] corresponde a valor[i])
     PLAYER* playerInit();
     PLAYER *parseLine(char *line); //A partir de uma linha do .csv, gera uma struct com as informacoes
-    PLAYER* playerFromBin(FILE*fd, uint64_t offset); //Extrai uma struct de um binario no offset parametro
+    PLAYER* playerFromBin(FILE*fd, int64_t offset); //Extrai uma struct de um binario no offset parametro
     void playerSetIdade(PLAYER* p, int idade);
     void playerSetId(PLAYER* p, int id);
     //Todas as funcoes que setam campos com strings criam copias das strings passadas como argumentos
@@ -44,7 +44,7 @@ Aqui estao definida a interface e o formato da struct
     void playerSetClube(PLAYER* p, char* clube);
     void playerSetPais(PLAYER* p, char* pais);
     int playerTamanho(PLAYER* p); //Seta e retorna o tamanho
-    int* idFromBin(FILE* fd, uint64_t offset);
+    int* idFromBin(FILE* fd, int64_t offset);
     void playerPrint(PLAYER *p);
     void playerFree(PLAYER** p); //libera memoria, deve ser passado por referencia
 

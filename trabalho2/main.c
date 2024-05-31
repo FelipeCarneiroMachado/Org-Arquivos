@@ -15,7 +15,7 @@ int main(){
 	HEADER *header = NULL;
 	INDEX* index = NULL;
 	char commandBuffer[256];
-	char *src, *dest, *intBuffer, indexName;
+	char *src, *dest, *intBuffer, *indexName, **fields, **values;
 	int nOfQueries, nOfFields;
 	while (fgets(commandBuffer, 256, stdin) != NULL){
 		switch(commandBuffer[0]){
@@ -25,7 +25,7 @@ int main(){
 				dest = strtok(NULL, "\n");
 				csv = fopen(src, "r");
 				bin = initFile(dest);
-				createTable(src, dest);
+				createTable(csv, bin);
 				fclose(csv);
 				fclose(bin);
 				binarioNaTela(dest);
@@ -35,6 +35,11 @@ int main(){
 				src = strtok(NULL, "\n");
 				if((bin = fopen(src, "rb")) == NULL ){
 					printf("Falha no processamento do arquivo.\n");
+					break;
+				}
+				if(header->status == '0'){
+					printf("Falha no processamento do arquivo.\n");
+					fclose(bin);
 					break;
 				}
 				header = extraiHeader(bin);
@@ -49,16 +54,21 @@ int main(){
 					printf("Falha no processamento do arquivo.\n");
 					break;
 				}
+				if(header->status == '0'){
+					printf("Falha no processamento do arquivo.\n");
+					fclose(bin);
+					break;
+				}
 				header = extraiHeader(bin);
 				nOfQueries = atoi(strtok(NULL, "\n"));
-				char **fields = stringArray(5, 32);
-				char **values = stringArray(5, 32);
+				fields = stringArray(5, 32);
+				values = stringArray(5, 32);
 				for(int i = 0; i < nOfQueries; i++){
 					printf("Busca %d\n\n", i + 1);
 					scanf("%d", &nOfFields);
 					for(int j = 0; j < nOfFields; j++){
 						scanf("%s", fields[j]);
-						if(strcmp(fields[j], "nome") == 0 || strcmp(fields[j], "nomeClube") == 0 || strcmp(fields[j], "nacionalidade") == 0)
+						if(strcmp(fields[j], "nomeJogador") == 0 || strcmp(fields[j], "nomeClube") == 0 || strcmp(fields[j], "nacionalidade") == 0)
 							scan_quote_string(values[j]);
 						else
 							scanf("%s", values[j]);
@@ -76,6 +86,12 @@ int main(){
 					break;
 				}
 				header = extraiHeader(bin);
+				if(header->status == '0'){
+					printf("Falha no processamento do arquivo.\n");
+					fclose(bin);
+					free(header);
+					break;
+				}
 				index = createIndex(bin, header, indexName);
 				binarioNaTela(indexName);
 				fclose(bin);
@@ -85,25 +101,44 @@ int main(){
 			case '5':
 				strtok(commandBuffer, " ");
 				src = strtok(NULL, " ");
-				if(bin == NULL)
-					bin == fopen(src ,"r+b");
+				if((bin = fopen(src, "r+b")) == NULL ){
+					printf("Falha no processamento do arquivo.\n");
+					break;
+				}
+				header = extraiHeader(bin);
+				if(header->status == '0'){
+					printf("Falha no processamento do arquivo.\n");
+					fclose(bin);
+					free(header);
+					break;
+				}
+				indexName = strtok(NULL, " ");
+				index = createIndex(bin, header, indexName);
 				nOfQueries = atoi(strtok(NULL, "\n"));
-				char **fields = stringArray(5, 32);
-				char **values = stringArray(5, 32);
+				fields = stringArray(5, 32);
+				values = stringArray(5, 32);
 				for(int i = 0; i < nOfQueries; i++){
-					printf("Busca %d\n\n", i + 1);
 					scanf("%d", &nOfFields);
 					for(int j = 0; j < nOfFields; j++){
 						scanf("%s", fields[j]);
-						if(strcmp(fields[j], "nome") == 0 || strcmp(fields[j], "nomeClube") == 0 || strcmp(fields[j], "nacionalidade") == 0)
+						if(strcmp(fields[j], "nomeJogador") == 0 || strcmp(fields[j], "nomeClube") == 0 || strcmp(fields[j], "nacionalidade") == 0)
 							scan_quote_string(values[j]);
 						else
 							scanf("%s", values[j]);
 					}
-					delete(bin, index, nOfFields, fields, values);
+					delete(bin, header, index, nOfFields, fields, values);
+					logList(bin, header, "mylist.log");
 				}
+				updateHeader(bin, header);
+				writeIndex(index, indexName);
+				logList(bin, header, "mylist.log");
+				FILE *fds = fopen("../Saída/binario5.bin", "r");
+				logList(fds, extraiHeader(fds), "herlist.log");
+				free(header);
 				fclose(bin);
 				binarioNaTela(src);
+				binarioNaTela(indexName);
+				indexFree(&index);
 				freeStringArray(&fields, 5);
 				freeStringArray(&values, 5);
 				break;

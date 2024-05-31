@@ -25,11 +25,11 @@ Arquivo interface para manipulacao de binario
     FILE* initFile(char* filename);
     HEADER* extraiHeader(FILE *fd);
     void csvToBin(FILE *src, FILE* data);
-    void escreveRegistro(FILE* data, uint64_t offset, PLAYER* player);
-    void setStatus(FILE *fd, uint8_t status);
-    void removeInDisk(FILE* bin, HEADER* h , uint64_t offset);
+    void escreveRegistro(FILE* data, int64_t offset, PLAYER* player);
+    void setStatus(FILE *fd, int8_t status);
+    void removeInDisk(FILE* bin, HEADER* h , int64_t offset);
     void insertPlayer(FILE *bin, HEADER *h, PLAYER* p);
-    void updateHeader(FILE *bin, HEADER* h)
+    void updateHeader(FILE *bin, HEADER* h);
 
 
 #endif

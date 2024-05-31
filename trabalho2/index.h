@@ -10,14 +10,16 @@
     #include"binFile.h"
     typedef struct index_{
         int8_t status;
-        uint32_t nReg;
-        uint32_t arrLen;
+        int32_t nReg;
+        int32_t arrLen;
         struct data{
-            uint32_t id;
+            int32_t id;
             int64_t offset; 
         }*array;
     }INDEX;
     INDEX* makeIndex(FILE *fd, HEADER* h);
+    INDEX* loadIndex(char *filename);
+    void printArr(INDEX *i);
     int64_t indexSearch(INDEX* index, int id);
     void indexFree(INDEX** i);
     void writeIndex(INDEX* index, char* filename);

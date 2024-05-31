@@ -11,3 +11,6 @@ zip:
 	zip Grupo12_TrabalhoIntrodutorio.zip *.c *.h Makefile README.txt
 clearBin:
 	cp Entrada/binario1.bin Entrada/binarioTeste.bin
+envdo:
+	gcc player.c interface.c utils.c index.c binFile.c main.c -o ./env/main -g -march=native
+	cp Entrada/* in/* out/*  ./env/ 

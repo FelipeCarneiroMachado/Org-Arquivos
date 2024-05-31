@@ -27,6 +27,12 @@ void freeStringArray(char*** array, int size){
 	free(*array);
 	*array = NULL;
 }
+void logStrArr(char** arr, int n){
+	FILE *log = fopen("strarr.log", "w");
+	for(int i = 0; i < n; i++)
+		fprintf(log, "%s", arr[i]);
+	fclose(log);
+}
 void binarioNaTela(char *nomeArquivoBinario) { /* Você não precisa entender o código dessa função. */
 
 	/* Use essa função para comparação no run.codes. Lembre-se de ter fechado (fclose) o arquivo anteriormente.

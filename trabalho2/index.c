@@ -45,9 +45,9 @@ void indexSort(INDEX* i){
 }
 //Printar para debug, printa num arquivo de log
 void printArr(INDEX *i){
-    FILE * fd = fopen("log.log", "a");
+    FILE * fd = fopen("arr.log", "w");
     for(int j = 0; j < i->nReg - 1; j++){
-        fprintf(fd, " (%d %d)  ", i->array[j].id, i->array[j].offset);
+        fprintf(fd, "index = %d / id = %d / off = %ld\n ",j, i->array[j].id, i->array[j].offset);
     }
     fclose(fd);
 }
@@ -67,20 +67,16 @@ void indexFree(INDEX** i){
 
 //Cria o indice a partir do arquivo de dados
 INDEX* makeIndex(FILE *fd, HEADER* h){
-    if(h->status == '0'){
-        printf("Falha no processamento do arquivo.\n");
-        return NULL;
-    }
     //Alocacoes
     INDEX *i = indexInit(h->nReg);
     //Leitura de header
     //Itera pelo arquivo de dados
-    uint64_t offset = 25;
+    int64_t offset = 25;
     if(ftell(fd) != offset)
         fseek(fd, offset, SEEK_SET);
     while(offset < h->offset){
         PLAYER *p = playerFromBin(fd, NO_SEEK);//Recupera id e tamanho
-        if(p->status == '1'){
+        if(p->status == '0'){
             //Append na lista
             i->array[i->nReg].id = p->id;
             i->array[i->nReg].offset = offset;
@@ -100,7 +96,7 @@ INDEX* makeIndex(FILE *fd, HEADER* h){
 
 //Uma busca binaria simples
 int64_t indexSearchAux(struct data *arr, int target, int lo, int hi){
-    if(lo < hi){
+    if(lo <= hi){
         struct data half = arr[(lo + hi)/2]; 
         if(half.id == target)
             return half.offset;
@@ -124,19 +120,19 @@ int indexSearchPositionAux(struct data *arr, int target, int lo, int hi){
         if(arr[half].id <= target && arr[half].id >= target)
             return (lo + hi)/2;
         if(arr[half].id > target)
-            return indexSearchAux(arr, target, lo, (lo + hi)/2);
+            return indexSearchPositionAux(arr, target, lo, (lo + hi)/2);
         if(arr[half].id < target)
-            return indexSearchAux(arr, target, ((lo + hi)/2) + 1, hi);
+            return indexSearchPositionAux(arr, target, ((lo + hi)/2) + 1, hi);
     }
     return -1;
 }
 
 int64_t indexSearchPosition(INDEX* index, int id){
-    if(index->array[0].id > id)
+    if(index->array[0].id >= id)
         return 0;
-    if(index->array[index->nReg - 1].id > id)
+    if(index->array[index->nReg - 1].id <= id)
         return index->nReg - 1;
-    return indexSearchAux(index->array, id, 0, index->nReg - 1);
+    return indexSearchPositionAux(index->array, id, 0, index->nReg - 1);
 }
 void shiftRight(INDEX* index, int pos){
     for(int i = index->nReg - 1; i >= pos; i++){
@@ -158,7 +154,7 @@ void indexInsert(INDEX *index, int id, int offset){
 
 
 //Funcoes de escrita do indice em arquivo de indice
-void writeIndexReg(struct data reg, FILE *fd, uint64_t offset){
+void writeIndexReg(struct data reg, FILE *fd, int64_t offset){
     if(offset != NO_SEEK)
         fseek(fd, offset, SEEK_SET);
     fwrite(&(reg.id), 4, 1, fd);
@@ -186,8 +182,8 @@ INDEX *inconsistentIndexHandler(){
     return NULL;
 }
 
-void indexRegFromBin(FILE *fd, struct data *reg, uint64_t offset){
-    if(ftell(fd) != offset)
+void indexRegFromBin(FILE *fd, struct data *reg, int64_t offset){
+    if(offset != NO_SEEK)
         fseek(fd, offset, SEEK_SET);
     fread(&(reg->id), 4, 1, fd);
     fread(&(reg->offset), 8, 1, fd);
@@ -200,12 +196,16 @@ INDEX* loadIndex(char *filename){
         fseek(fd, 0, SEEK_SET);
     char status;
     fread(&status, 1, 1 ,fd);
-    if(status != '0')
+    if(status == '0')
         return inconsistentIndexHandler();
-    uint64_t offset = 1;
+    // fseek(fd, 0, SEEK_END);
+    // int64_t maxOff = ftell(fd);
+    // fseek()
+    int64_t offset = 1;
     while(!feof(fd)){
-        indexRegFromBin(fd, &(index->array[index->nReg]), offset);
+        indexRegFromBin(fd, &(index->array[index->nReg]), NO_SEEK);
         index->nReg++;
+        offset += sizeof(struct data);
         if(index->nReg == index->arrLen){
             index->arrLen *= 2;
             index->array =(struct data*) realloc(index->array, index->arrLen * sizeof(struct data));
@@ -222,7 +222,11 @@ void shiftLeft(INDEX* index, int position){
 }
 
 void indexRemove(INDEX* index, int id){
-    int position = indexSearchPosition(index, id);
+    //printArr(index);
+    int position;
+    if((position = indexSearchPosition(index, id)) == -1)
+        return;
     shiftLeft(index, position);
     index->nReg--;
+    //return true;
 }
