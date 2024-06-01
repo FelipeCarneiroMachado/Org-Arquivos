@@ -77,6 +77,8 @@ int main(){
 				}
 				freeStringArray(&fields, 5);
 				freeStringArray(&values, 5);
+				fclose(bin);
+				free(header);
 			case '4':
 				strtok(commandBuffer, " ");
 				src = strtok(NULL, " ");

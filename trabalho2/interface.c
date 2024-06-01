@@ -9,7 +9,6 @@ Arquivo fonte da interface
 //Recebe 2 arrays de strings, 1 com os campos a serem comparados e outro com os valores
 //Os arrays devem ser pareados (campo[i] corresponde a valor[i])
 void selectWhere(FILE* fd, HEADER* h, int numOfParameters, char** fields, char** values){
-//Extrai informacoes do header
     if(h->status == '0'){
         printf("Falha no processamento do arquivo.\n");
         return;
@@ -22,12 +21,6 @@ void selectWhere(FILE* fd, HEADER* h, int numOfParameters, char** fields, char**
             searchForId = true;
             id = atoi(values[i]);
         }
-    // if(searchForId){
-    //     PLAYER *p = playerFromBin(fd, indexSearch(globalIndex, id));
-    //     playerPrint(p);
-    //     playerFree(&p);
-    //     return;
-    // }
     while(h->offset > offset){ //Itera sobre o arquivo
         PLAYER *p = playerFromBin(fd, NO_SEEK);
         if(checkPlayer(p, numOfParameters, fields, values)){
@@ -41,47 +34,47 @@ void selectWhere(FILE* fd, HEADER* h, int numOfParameters, char** fields, char**
     }
     if(!flagFound) //Verifica se algum registro foi encontrado
         printf("Registro inexistente.\n\n");
-    fclose(fd);
-    free(h);
 }
 
 INDEX* createIndex(FILE* bin, HEADER* h, char* indexName){
-    INDEX* index = makeIndex(bin, h);
-    writeIndex(index, indexName);
+    INDEX* index = makeIndex(bin, h); //Cria o indice em ram
+    writeIndex(index, indexName); //Escreve em disco o indice
     return index;
 }
 
-
+//Remove do arquivo de daos todos os registros que se encaixem nos parametros estipulados
+//Recebe 2 arrays de strings, 1 com os campos a serem comparados e outro com os valores
+//Os arrays devem ser pareados (campo[i] corresponde a valor[i])
 void delete(FILE* data, HEADER* h, INDEX* index, int numOfParameters, char** fields, char** values){
-    FILE *log = fopen("log.log", "w");
+    //Declaracao de variaveis
     int id;
     int64_t offset = 25;
-    bool flagFound = false, searchForId = false;
+    bool flagFound = false, searchForId = false; //Flags
+
+
     for(int i = 0; i < numOfParameters; i++) //Id eh unico (chave primaria, se ele esta envolvido na busca eh parar mais cedo, economizando tempo)
         if(strcmp("id", fields[i]) == 0){
             searchForId = true;
-            id = atoi(values[i]);
-            if(id == 222537)
-                offset = 3;
+            id = atoi(values[i]); //Determina se ha busca por id e determina o id
         }
+
+    //Busca por ID, utiliza o indice
     if(searchForId){
         offset = indexSearch(index, id);
-        if(offset == -1){
+        if(offset == -1){//Caso nao ache
             //printf("Registro inexistente.\n\n");
             return;
         }
-
         indexRemove(index, id); 
         removeInDisk(data, h, offset);
         return;
     }
+
+    //Busca sequencial no arquivo de dados
     fseek(data, 25, SEEK_SET);
     while(h->offset > offset){ //Itera sobre o arquivo
-        PLAYER *p = playerFromBin(data, NO_SEEK); 
-        if(p->id == 222537)    
-            fprintf(log, "player read : id = %d offset = %ld\n", p->id, offset);
-        fprintf(log, "player read : id = %d offset = %ld\n", p->id, offset);
-        fflush(log);
+        PLAYER *p = playerFromBin(data, NO_SEEK); //Extrai player do offset atual (sem fseek)
+        //Verificacao de parametros e remocao
         if(checkPlayer(p, numOfParameters, fields, values)){
             indexRemove(index, p->id);
             removeInDisk(data, h, offset);
@@ -93,7 +86,10 @@ void delete(FILE* data, HEADER* h, INDEX* index, int numOfParameters, char** fie
     }
     // if(!flagFound) //Verifica se algum registro foi encontrado
     //     printf("Registro inexistente.\n\n");
-    fflush(data);
+    //Salva as alteracoes feitas em disco
+    //Necessario para nao interferir com outras remocoes sucessoras
+    fflush(data); 
+    
 }
 
 
