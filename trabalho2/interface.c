@@ -91,8 +91,8 @@ void delete(FILE* data, HEADER* h, INDEX* index, int numOfParameters, char** fie
         offset += playerTamanho(p);
         playerFree(&p);
     }
-    if(!flagFound) //Verifica se algum registro foi encontrado
-        printf("Registro inexistente.\n\n");
+    // if(!flagFound) //Verifica se algum registro foi encontrado
+    //     printf("Registro inexistente.\n\n");
     fflush(data);
 }
 

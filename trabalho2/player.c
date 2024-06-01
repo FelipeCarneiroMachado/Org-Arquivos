@@ -119,42 +119,6 @@ bool checkPlayer(PLAYER* p, int numOfParameters, char** fields, char** values){
         if(strcmp(fields[i], "idade") == 0)
             if(atoi(values[i]) != p->idade)
                 return false;
-        if(strcmp(fields[i], "nome") == 0){
-            if(p->nome == NULL)
-                return false;
-            if(strcmp(values[i], p->nome) != 0)
-                return false;
-        }
-        if(strcmp(fields[i], "nacionalidade") == 0){
-            if(p->pais == NULL)
-                return false;
-            if(strcmp(values[i], p->pais) != 0)
-                return false;
-        }
-        if(strcmp(fields[i], "nomeClube") == 0){
-            if(p->clube == NULL)
-                return false;
-            if(strcmp(values[i], p->clube) != 0)
-                return false;
-        }
-    }
-    return true;
-}
-
-bool checkPlayerAll(PLAYER* p, int numOfParameters, char** fields, char** values){
-    //Compara os campos de uma struct com uma lista de valores
-    //Recebe 2 arrays de strings, 1 com os campos a serem comparados e outro com os valores
-    //Os arrays devem ser pareados (campo[i] corresponde a valor[i])
-    if(p->status == '1')//Se o registro esta logicamente removido, retorna falso
-        return false;
-    for(int i = 0; i < numOfParameters; i++){
-        if(strcmp(fields[i], "id") == 0){
-            if(atoi(values[i]) != p->id)
-                return false; 
-        }
-        if(strcmp(fields[i], "idade") == 0)
-            if(atoi(values[i]) != p->idade)
-                return false;
         if(strcmp(fields[i], "nomeJogador") == 0){
             if(p->nome == NULL)
                 return false;
@@ -176,6 +140,8 @@ bool checkPlayerAll(PLAYER* p, int numOfParameters, char** fields, char** values
     }
     return true;
 }
+
+
 PLAYER* parseLine(char *line){
     //A partir de uma linha do .csv, gera uma struct com as informacoes
     PLAYER* newPlayer = playerInit();
