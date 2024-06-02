@@ -72,7 +72,7 @@ void csvToBin(FILE *src, FILE* data){
     while(fgets(tempstr, 100, src) != NULL){ //itera pelo .csv
         player = parseLine(tempstr);
         escreveRegistro(data, offset, player);
-        offset += playerTamanho(player);
+        offset += playerTamanho(player, true);
         memset(tempstr, 0, 100);
         playerFree(&player);
         nRegistros += 1;
@@ -116,7 +116,7 @@ void escreveRegistro(FILE* data, int64_t offset, PLAYER* player){
     int8_t tempByte = '0';
     int64_t temp8bytes = -1;
     fwrite(&tempByte, 1, 1, data); //removido
-    int32_t regSize = playerTamanho(player);
+    int32_t regSize = playerTamanho(player, false);
     fwrite(&regSize,4, 1, data); //tamanho do registro
     fwrite(&temp8bytes, 8, 1, data); //prox offset
     fwrite(&(player->id), 4, 1, data); //id
@@ -136,23 +136,28 @@ void escreveRegistro(FILE* data, int64_t offset, PLAYER* player){
 
 
 
-void removeInDisk(FILE* bin, HEADER* h , int64_t offset){
-    PLAYER *toRemove = playerFromBin(bin, offset);
+void removeInDisk(FILE* bin, HEADER* h, int64_t offset){
+    PLAYER *toRemove = playerFromBin(bin, offset); //Extrai o player para pegaar seu tamanho
+    //Marca como logicamente removido
     fseek(bin, offset, SEEK_SET);
     char tempByte = '1';
     fwrite(&tempByte, 1, 1, bin);
+    //Se a lista de removidos esta vazia
     if(h->topo == -1){
         fseek(bin, 1, SEEK_SET);
-        fwrite(&offset, 8, 1, bin);
+        fwrite(&offset, 8, 1, bin); //Atualiza topo
         h->topo = offset;
         h->nReg--;
         h->nRem++;
+        fflush(bin);
         return;
     }
     int64_t prevOff = 0, curOff = h->topo;
     PLAYER *prev = NULL, *current = playerFromBin(bin, h->topo);
+    //Iteracao pela lista de removidos, insere ordenadamente
     while(true){
         if(toRemove->tamanho < current->tamanho){
+            //Insercao na lista
             fseek(bin, offset + 5, SEEK_SET);
             fwrite(&curOff, 8, 1, bin);
             if(prev == NULL){
@@ -172,6 +177,7 @@ void removeInDisk(FILE* bin, HEADER* h , int64_t offset){
         prevOff = curOff;
         curOff = current->prox;
         prev = current;
+        //Caso chegue ao fim da lista
         if(curOff == -1){
             fseek(bin, prevOff + 5, SEEK_SET);
             fwrite(&offset, 8, 1, bin);
@@ -182,53 +188,69 @@ void removeInDisk(FILE* bin, HEADER* h , int64_t offset){
     }
         h->nReg--;
         h->nRem++;
-
-
+        fflush(bin);
 }
 
-void insertPlayer(FILE *bin, HEADER *h, PLAYER* p){
+int64_t insertPlayer(FILE *bin, HEADER *h, PLAYER* p){
     if(h->topo == -1){
+        //Caso nao haja removidos, vai ao fim do arquivo
         escreveRegistro(bin, h->offset, p);
         h->nReg++;
-        return;
+        h->offset += p->tamanho;
+        fflush(bin);
+        return h->offset - p->tamanho;
     }
+    int ncifroes;
     char cifrao =  '$';
     PLAYER *prev = NULL, *current = playerFromBin(bin,h->topo);
     int64_t prevOff = -1, curOff = h->topo;
+    //Itera sobre a lista de removidos
     while(true){
+        //Caso encontre a posicao adequada
         if(p->tamanho <= current->tamanho){
-            //Lidar edge cases
+            ncifroes = current->tamanho - p->tamanho;
+            p->tamanho = current->tamanho;
             if(prev == NULL){
+                //Caso de ser o primeiro elemento
                 fseek(bin, 1, SEEK_SET);
-                fwrite(&(current->prox), 8, 1, bin);
+                fwrite(&(current->prox), 8, 1, bin);          
                 escreveRegistro(bin, curOff, p);
-                for(int i = 0; i < p->tamanho - current->tamanho; i++)
+                //Escreve "$" no espaco nao utilizado
+                for(int i = 0; i < ncifroes; i++)
                     fwrite(&cifrao, 1, 1, bin);
+                h->topo = current->prox;
                 h->nReg++;
                 h->nRem--;    
                 break;
             }
+            //Escrita padrao e remocao da lista de removidos
             fseek(bin, prevOff + 5, SEEK_SET);
             fwrite(&(current->prox), 8, 1, bin);
             escreveRegistro(bin, curOff, p);
-            for(int i = 0; i < current->tamanho - p->tamanho; i++)
+            //Escreve "$" no espaco nao utilizado
+            for(int i = 0; i < ncifroes; i++)
                 fwrite(&cifrao, 1, 1, bin);
             h->nReg++;
             h->nRem--;
             break;
         }
+        //Iteracao
         if(prev != NULL)
             playerFree(&prev);
         prevOff = curOff;
         curOff = current->prox;
         prev = current;
+        //Fim da lista
         if(curOff == -1){
             escreveRegistro(bin, h->offset, p);
+            h->offset += p->tamanho;
             h->nReg++;
-            break;
+            return h->offset - p->tamanho; 
         }
         current = playerFromBin(bin, current->prox);
     }
+    fflush(bin);
+    return curOff;
 }
 
 

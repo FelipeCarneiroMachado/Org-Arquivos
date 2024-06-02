@@ -29,7 +29,7 @@ void selectWhere(FILE* fd, HEADER* h, int numOfParameters, char** fields, char**
             if(searchForId)
                 break;
         }
-        offset += playerTamanho(p);
+        offset += playerTamanho(p, true);
         playerFree(&p);
     }
     if(!flagFound) //Verifica se algum registro foi encontrado
@@ -47,6 +47,7 @@ INDEX* createIndex(FILE* bin, HEADER* h, char* indexName){
 //Os arrays devem ser pareados (campo[i] corresponde a valor[i])
 void delete(FILE* data, HEADER* h, INDEX* index, int numOfParameters, char** fields, char** values){
     //Declaracao de variaveis
+    FILE *log = fopen("log.log", "w");
     int id;
     int64_t offset = 25;
     bool flagFound = false, searchForId = false; //Flags
@@ -73,15 +74,17 @@ void delete(FILE* data, HEADER* h, INDEX* index, int numOfParameters, char** fie
     //Busca sequencial no arquivo de dados
     fseek(data, 25, SEEK_SET);
     while(h->offset > offset){ //Itera sobre o arquivo
-        PLAYER *p = playerFromBin(data, NO_SEEK); //Extrai player do offset atual (sem fseek)
+        PLAYER *p = playerFromBin(data, NO_SEEK);
+        fprintf(log, "read id = %d / off = %ld / size = %d", p->id, offset, p->tamanho);
+        fflush(log); //Extrai player do offset atual (sem fseek)
         //Verificacao de parametros e remocao
         if(checkPlayer(p, numOfParameters, fields, values)){
             indexRemove(index, p->id);
             removeInDisk(data, h, offset);
             flagFound = true;
-            fseek(data, offset + playerTamanho(p), SEEK_SET);
+            fseek(data, offset + playerTamanho(p, true), SEEK_SET);
         }
-        offset += playerTamanho(p);
+        offset += playerTamanho(p, true);
         playerFree(&p);
     }
     // if(!flagFound) //Verifica se algum registro foi encontrado
@@ -116,7 +119,7 @@ void selectAll(FILE* fd, HEADER* h){
             playerPrint(p);
             flag = true;
         }
-        offset += playerTamanho(p);
+        offset += playerTamanho(p, true);
         playerFree(&p);
     }
     if(!flag) //Verifica se algum registro foi encontrado
@@ -147,5 +150,6 @@ void logList(FILE* bin, HEADER *h, char *name){
         playerFree(&current);
         current = playerFromBin(bin,offset);
     }
+    fclose(bin);
     fclose(log);
 }

@@ -124,8 +124,8 @@ int64_t indexSearch(INDEX* index, int id){
 //Busca no indice que retorna a posicao no array, para insercao ou remocao, busca binaria
 int indexSearchPositionAux(struct data *arr, int target, int lo, int hi){
     if(lo < hi){
-        int half = (lo + hi)/2; 
-        if(arr[half].id <= target && arr[half].id >= target) //Usa desigualdade para determinar a posicao a se inserir
+        int half = (lo + hi)/2;
+        if(arr[half].id <= target && arr[half + 1].id >= target) //Usa desigualdade para determinar a posicao a se inserir
             return (lo + hi)/2;
         if(arr[half].id > target)
             return indexSearchPositionAux(arr, target, lo, (lo + hi)/2);
@@ -134,6 +134,22 @@ int indexSearchPositionAux(struct data *arr, int target, int lo, int hi){
     }
     return -1;
 }
+int indexSearchPositionRemoveAux(struct data *arr, int target, int lo, int hi){
+    if(lo <= hi){
+        int half = (lo + hi)/2; 
+        if(arr[half].id == target)
+            return half;
+        if(arr[half].id > target)
+            return indexSearchPositionRemoveAux(arr, target, lo, (lo + hi)/2);
+        if(arr[half].id < target)
+            return indexSearchPositionRemoveAux(arr, target, ((lo + hi)/2) + 1, hi);
+    }
+    return -1;
+}
+int indexSearchPositionRemove(INDEX* index, int id){
+    return indexSearchPositionRemoveAux(index->array, id, 0, index->nReg -1);
+}
+
 //Busca no indice que retorna a posicao no array, para insercao ou remocao, busca binaria
 int64_t indexSearchPosition(INDEX* index, int id){
     if(index->array[0].id >= id)
@@ -144,13 +160,13 @@ int64_t indexSearchPosition(INDEX* index, int id){
 }
 //Desloca o array para a direita, necessario para insercao
 void shiftRight(INDEX* index, int pos){
-    for(int i = index->nReg - 1; i >= pos; i++){
+    for(int i = index->nReg - 1; i >= pos; i--){
         index->array[i + 1] = index->array[i];
     }
 }
 //Insere ordenadamente no indice
 void indexInsert(INDEX *index, int id, int offset){
-    int indToInsert = indexSearchPosition(index, id);
+    int indToInsert = indexSearchPosition(index, id) + 1;
     shiftRight(index, indToInsert);
     //Atualiza valores
     index->array[indToInsert].id = id; 
@@ -239,7 +255,7 @@ void shiftLeft(INDEX* index, int position){
 void indexRemove(INDEX* index, int id){
     int position;
     //busca da posicao
-    if((position = indexSearchPosition(index, id)) == -1)
+    if((position = indexSearchPositionRemove(index, id)) == -1)
         return;
     //deslocamento
     shiftLeft(index, position);

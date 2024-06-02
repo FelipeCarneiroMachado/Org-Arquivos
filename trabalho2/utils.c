@@ -95,3 +95,4 @@ void scan_quote_string(char *str) {
 		strcpy(str, "");
 	}
 }
+

@@ -129,13 +129,9 @@ int main(){
 							scanf("%s", values[j]);
 					}
 					delete(bin, header, index, nOfFields, fields, values);
-					logList(bin, header, "mylist.log");
 				}
 				updateHeader(bin, header);
 				writeIndex(index, indexName);
-				logList(bin, header, "mylist.log");
-				FILE *fds = fopen("../Saída/binario5.bin", "r");
-				logList(fds, extraiHeader(fds), "herlist.log");
 				free(header);
 				fclose(bin);
 				binarioNaTela(src);
@@ -144,6 +140,34 @@ int main(){
 				freeStringArray(&fields, 5);
 				freeStringArray(&values, 5);
 				break;
+			case '6':
+				strtok(commandBuffer, " ");
+				src = strtok(NULL, " ");
+				if((bin = fopen(src, "r+b")) == NULL ){
+					printf("Falha no processamento do arquivo.\n");
+					break;
+				}
+				header = extraiHeader(bin);
+				if(header->status == '0'){
+					printf("Falha no processamento do arquivo.\n");
+					fclose(bin);
+					free(header);
+					break;
+				}
+				indexName = strtok(NULL, " ");
+				index = createIndex(bin, header, indexName);
+				nOfQueries = atoi(strtok(NULL, "\n"));
+				for(int i = 0; i < nOfQueries; i++){
+					PLAYER *p = playerInput(commandBuffer);
+					indexInsert(index, p->id, insertPlayer(bin, header, p));
+				}
+				updateHeader(bin, header);
+				writeIndex(index, indexName);
+				fclose(bin);
+				binarioNaTela(src);
+				binarioNaTela(indexName);
+				free(header);
+				indexFree(&index);
 			default:
 				break;
 			

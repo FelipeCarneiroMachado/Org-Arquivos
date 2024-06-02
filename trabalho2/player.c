@@ -71,10 +71,13 @@ void playerSetPais(PLAYER* p, char* pais){
     p->pais = paisCp;
     p->paisLen = len;
 }
-int playerTamanho(PLAYER* p){
-    int size = 33; //tamanho fixo = 1 + 8 + 6 * 4
-    size += p->clubeLen + p->nomeLen + p->paisLen;
-    p->tamanho = size; //Retorna e seta o tamanho
+int playerTamanho(PLAYER* p, bool set){
+    int size = p->tamanho;
+    if(set){
+        int size = 33; //tamanho fixo = 1 + 8 + 6 * 4
+        size += p->clubeLen + p->nomeLen + p->paisLen;
+        p->tamanho = size; //Retorna e seta o tamanho
+    }
     return size;
 }
 void playerPrint(PLAYER *p){
@@ -103,6 +106,10 @@ void playerFree(PLAYER** p){
     free(*p);
     *p = NULL;
 }
+
+
+
+
 
 
 bool checkPlayer(PLAYER* p, int numOfParameters, char** fields, char** values){
@@ -191,9 +198,35 @@ PLAYER* parseLine(char *line){
     tempStr[j] = '\0';
     playerSetClube(newPlayer, tempStr);
     j = 0; i++;
-    playerTamanho(newPlayer);
+    playerTamanho(newPlayer, true);
     return newPlayer;
 }
+
+//Retorna um player a partir de uma linha de texto em conformidade
+//com o formato da funcionalidade 6
+PLAYER* playerInput(){
+    PLAYER *p = playerInit();
+    char buffer[256];
+    scanf("%s", buffer);
+    p->id = atoi(buffer);
+    scan_quote_string(buffer);
+    if(buffer[0] != '\0')
+        p->idade = atoi(buffer);
+    scan_quote_string(buffer);
+    if(buffer[0] != '\0')
+        playerSetNome(p,buffer);
+    scan_quote_string(buffer);
+    if(buffer[0] != '\0')
+        playerSetPais(p,buffer);
+    scan_quote_string(buffer);
+    if(buffer[0] != '\0')
+        playerSetClube(p,buffer);
+    getchar();
+    playerTamanho(p, true);
+    return p;
+}
+
+
 //Retorna um array onde [0] eh o id e [1] eh o tamanho
 int* idFromBin(FILE* fd, int64_t offset){
     //Esta funcao eh utilizada na criacao do indice, faz menos leituras que a playerFromBin

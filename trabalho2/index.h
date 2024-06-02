@@ -21,6 +21,7 @@
     INDEX* loadIndex(char *filename);
     void printArr(INDEX *i);
     int64_t indexSearch(INDEX* index, int id);
+    void indexInsert(INDEX *index, int id, int offset);
     void indexFree(INDEX** i);
     void writeIndex(INDEX* index, char* filename);
     void indexRemove(INDEX* index, int id);

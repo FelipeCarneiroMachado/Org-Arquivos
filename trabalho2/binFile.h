@@ -12,6 +12,7 @@ Arquivo interface para manipulacao de binario
     #include<stdio.h>
     #include<stdint.h>
     #include"player.h"
+    //#include"index.h"
     #include"utils.h"
     #define NO_SEEK -1
     //struct para o header do arquivo binario
@@ -28,7 +29,7 @@ Arquivo interface para manipulacao de binario
     void escreveRegistro(FILE* data, int64_t offset, PLAYER* player);
     void setStatus(FILE *fd, int8_t status);
     void removeInDisk(FILE* bin, HEADER* h , int64_t offset);
-    void insertPlayer(FILE *bin, HEADER *h, PLAYER* p);
+    int64_t insertPlayer(FILE *bin, HEADER *h, PLAYER* p);
     void updateHeader(FILE *bin, HEADER* h);
 
 
