@@ -1,6 +1,7 @@
-Todas as Funcionalidades tao Implementadas basicamente, oq
-falta eh integrar na main e alterar as coisas q tiraram ponto no trabalho passado
-Agora a main vai ser responsavel por ter os ponteiros de arquivo, indice e header.
-Essa parte de alteracao eu faco
-Tu pode fazer a entrada da insercao? Meio chata mas n vai ser dificil, so fazer o case 6 no switch da main
-com os scanf e tal, tem q lidar com os NULO tbm.
+PASSOU TUDO NESSE KARALHO
+Oq falta:
+-Tirar as gambiarra de debug
+-Documentacao
+-Video
+-Arrumar coisa de modularizacao?
+-Verificar qq deu errado nos casos de teste ocultos no TI e ver se precisa consertar
