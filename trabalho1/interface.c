@@ -54,7 +54,7 @@ void selectAll(char* filename){
     bool flag =  false;
     HEADER *h = extraiHeader(fd); //Extrai informacoes do header
     if(h->status == '0'){
-        printf("\nArquivo de dados inconsistente\n");
+        printf("Falha no processamento do arquivo.\n");
         return;
     }
     int64_t offset = 25;

@@ -180,7 +180,7 @@ PLAYER* parseLine(char *line){
     playerSetPais(newPlayer, tempStr);
     j = 0; i++;
     memset(tempStr, 0, 64);
-    while((iterChar = line[i]) != '\n'){
+    while((iterChar = line[i]) != '\n'&& iterChar != '\r'){
         //loop para ler clube
         tempStr[j++] = iterChar;
         i++;
