@@ -1,10 +1,10 @@
 #Makefile do projeto
 #diretiva de teste local
 test:
-	gcc player.c interface.c utils.c index.c binFile.c testmain.c -o main -g -march=native
+	gcc player.c interface.c utils.c index.c binFile.c testmain.c bTree.c -o main -g -march=native
 #diretiva para compilacao final
 all:
-	gcc player.c interface.c utils.c index.c binFile.c main.c -o main  -march=native
+	gcc player.c interface.c utils.c index.c binFile.c main.c bTree.c -o main  -g -march=native
 run:
 	./main
 clean:
@@ -15,5 +15,5 @@ zip:
 clearBin:
 	cp Entrada/binario1.bin Entrada/binarioTeste.bin
 envdo:
-	gcc player.c interface.c utils.c index.c binFile.c main.c -o ./env/main -g -march=native
-	cp Entrada/* in/* out/*  ./env/ 
+	gcc player.c interface.c utils.c index.c binFile.c bTree.c main.c -o ./env/main -g -march=native
+	cp -r arquivos/* ./env

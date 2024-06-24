@@ -153,3 +153,69 @@ void logList(FILE* bin, HEADER *h, char *name){
     fclose(bin);
     fclose(log);
 }
+
+
+void selectWithBtree(FILE *bin, FILE *btree, BT_HEADER *bth, HEADER *h,int numOfParameters, char **fields, char **values){
+        if(h->status == '0'){
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+    int id;
+    int64_t offset = 25; //Primeiro offset do arquivo
+    bool flagFound = false, searchForId = false;
+    for(int i = 0; i < numOfParameters; i++) //Id eh unico (chave primaria, se ele esta envolvido na busca eh parar mais cedo, economizando tempo)
+        if(strcmp("id", fields[i]) == 0){
+            searchForId = true;
+            id = atoi(values[i]);
+        }
+    if(searchForId){
+        offset = BT_search(bth, id, btree);
+        if(offset == -1)
+            printf("Registro inexistente.\n\n");
+        else{
+            PLAYER *p = playerFromBin(bin, offset);    
+            playerPrint(p);
+            playerFree(&p);
+        }
+        return;
+    }
+    while(h->offset > offset){ //Itera sobre o arquivo
+        PLAYER *p = playerFromBin(bin, NO_SEEK);
+        if(checkPlayer(p, numOfParameters, fields, values)){
+            playerPrint(p);
+            flagFound = true;
+            if(searchForId)
+                break;
+        }
+        offset += playerTamanho(p, true);
+        playerFree(&p);
+    }
+    if(!flagFound) //Verifica se algum registro foi encontrado
+        printf("Registro inexistente.\n\n");
+
+}
+
+
+BT_HEADER* createBtree(FILE *data, char *filename, HEADER *h){
+    //Alocacoes
+    BT_HEADER *bth = bTreeInit(filename);
+    FILE *bt = fopen(filename, "r+b");
+    //Realiza o seek apenas se necessario
+    int64_t offset = 25;
+    if(ftell(data) != offset) 
+        fseek(data, offset, SEEK_SET);
+        
+        
+    //Iteracao pelo arquivo de dados
+    while(offset < h->offset){
+        PLAYER *p = playerFromBin(data, NO_SEEK);//Recupera id e tamanho
+        if(p->status == '0'){
+            //Append na 
+                //nop();            
+            BT_insert(bt, bth, makeTrio(p->id, offset, -1));
+        }
+        offset += p->tamanho;
+        playerFree(&p);
+    }
+    return bth;
+}

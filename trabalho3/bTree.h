@@ -14,17 +14,26 @@
     typedef struct{
         int alturaNo;
         int nroChaves;
-        int *chaves;
-        int *offsets;
-        int *filhos;
-        int RRN;
-        int pai;
+        int chaves[3];
+        int64_t offsets[3];
+        int filhos[4];
     }BT_NODE;
     typedef struct {
         int id;
         int64_t offset;
-    }pair;
+        int filho;
+    }trio;
 
-
+    BT_HEADER *bTreeInit(char *filename);
+    void BT_writeHeader(BT_HEADER *bth, FILE* fd, bool seek);
+    BT_HEADER* bt_headerRead(FILE *btFile);
+    int64_t BT_search(BT_HEADER *bth, int id, FILE *btfile);
+    bool valid(BT_HEADER *bth, FILE *fd);
+    bool BT_printWrap(BT_HEADER *bth, FILE *fd);
+    void printNormal(int RRN, FILE *fd);
+    //void BT_print(int RRN, FILE *fd);
+    void BT_insert(FILE *btFile, BT_HEADER *bth, trio reg);
+    trio makeTrio(int id, int64_t off, int filho);
+    void logNode(BT_NODE* btn);
 
 #endif

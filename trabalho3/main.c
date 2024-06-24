@@ -11,11 +11,12 @@ Arquivo main do projeto
 ================================================
 */
 int main(){
-	FILE *bin = NULL, *csv = NULL;
+	FILE *bin = NULL, *csv = NULL, *bTree;
 	HEADER *header = NULL;
 	INDEX* index = NULL;
+	BT_HEADER *bth;
 	char commandBuffer[256];
-	char *src, *dest, *intBuffer, *indexName, **fields, **values;
+	char *src, *dest, *intBuffer, *indexName, **fields, **values, idBuf[5];
 	int nOfQueries, nOfFields;
 	while (fgets(commandBuffer, 256, stdin) != NULL){
 		switch(commandBuffer[0]){
@@ -169,6 +170,100 @@ int main(){
 				binarioNaTela(indexName);
 				free(header);
 				indexFree(&index);
+			case '7':
+				strtok(commandBuffer, " ");
+				src = strtok(NULL, " ");
+				indexName = strtok(NULL, "\n");
+				if((bin = fopen(src, "rb")) == NULL ){
+					printf("Falha no processamento do arquivo.\n");
+					break;
+				}
+				header = extraiHeader(bin);
+				if(header->status == '0'){
+					printf("Falha no processamento do arquivo.\n");
+					fclose(bin);
+					free(header);
+					break;
+				}
+				bth = createBtree(bin, indexName, header);
+				binarioNaTela(indexName);
+				fclose(bin);
+				free(header);
+				free(bth);
+				//indexFree(&index);
+				break;
+			case '8':
+				strtok(commandBuffer, " ");
+				src = strtok(NULL, " ");
+				if((bin = fopen(src, "rb")) == NULL ){
+					printf("Falha no processamento do arquivo.\n");
+					break;
+				}
+				header = extraiHeader(bin);
+				if(header->status == '0'){
+					printf("Falha no processamento do arquivo.\n");
+					fclose(bin);
+					break;
+				}
+				indexName = strtok(NULL, " ");
+				bth = createBtree(bin, indexName, header);
+				bTree = fopen(indexName, "rb");
+				nOfQueries = atoi(strtok(NULL, "\n"));
+				int id;
+				int64_t foundOff = -1;
+				for(int i = 0; i < nOfQueries; i++){
+					printf("Busca %d\n\n", i + 1);
+					scanf("%s", idBuf);
+					scanf("%d", &id);
+					foundOff = BT_search(bth, id, bTree);
+					if(foundOff == -1)
+						printf("Registro inexistente.\n\n");
+					else{
+						PLAYER *p = playerFromBin(bin, foundOff);
+						playerPrint(p);
+						playerFree(&p);
+					}
+				}
+				free(bth);
+				fclose(bin);
+				fclose(bTree);
+				free(header);
+				break;
+			case '9':
+				strtok(commandBuffer, " ");
+				src = strtok(NULL, " ");
+				if((bin = fopen(src, "rb")) == NULL ){
+					printf("Falha no processamento do arquivo.\n");
+					break;
+				}
+				header = extraiHeader(bin);
+				if(header->status == '0'){
+					printf("Falha no processamento do arquivo.\n");
+					fclose(bin);
+					break;
+				}
+				indexName = strtok(NULL, " ");
+				bth = createBtree(bin, indexName, header);
+				nOfQueries = atoi(strtok(NULL, "\n"));
+				fields = stringArray(5, 32);
+				values = stringArray(5, 32);
+				for(int i = 0; i < nOfQueries; i++){
+					//printf("Busca %d\n\n", i + 1);
+					scanf("%d", &nOfFields);
+					for(int j = 0; j < nOfFields; j++){
+						scanf("%s", fields[j]);
+						if(strcmp(fields[j], "nomeJogador") == 0 || strcmp(fields[j], "nomeClube") == 0 || strcmp(fields[j], "nacionalidade") == 0)
+							scan_quote_string(values[j]);
+						else
+							scanf("%s", values[j]);
+					}
+					selectWithBtree();
+				}
+				freeStringArray(&fields, 5);
+				freeStringArray(&values, 5);
+				fclose(bin);
+				free(header);
+				break;
 			default:
 				break;
 			

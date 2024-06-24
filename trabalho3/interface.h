@@ -13,6 +13,7 @@ Essecialmente, toda interacao com a base eh feita por este header
     #include<stdint.h>
     #include"player.h"
     #include"binFile.h"
+    #include"bTree.h"
     #include"index.h"
     void selectAll(FILE* fd, HEADER* h); //Printa todo o arquivo de dados
     //Recebe 2 arrays de strings, 1 com os campos a serem comparados e outro com os valores
@@ -23,4 +24,5 @@ Essecialmente, toda interacao com a base eh feita por este header
     void insert(FILE* bin, HEADER* header, INDEX* index, PLAYER* p); //Insercao de registro
     INDEX* createIndex(FILE* bin, HEADER* h, char* indexName);//Craicao de indice a partir de binario
     void logList(FILE* bin, HEADER *h, char *name);//Funcao de debug
+    BT_HEADER* createBtree(FILE *data, char *filename, HEADER *h);
 #endif
