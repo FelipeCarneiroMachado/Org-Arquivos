@@ -252,6 +252,7 @@ trio BT_insertAux(FILE* btfile, BT_HEADER *bth, int currentRRN, trio reg){
         }
         //Caso haja
         BT_nodeWrite(currentRRN, current, btfile);
+        free(current);
         fflush(btfile);
         return promoted;
     }
@@ -287,6 +288,9 @@ trio BT_insertAux(FILE* btfile, BT_HEADER *bth, int currentRRN, trio reg){
         BT_nodeWrite(bth->proxRRN++, newRight, btfile);
         BT_nodeWrite(current->filhos[nextPage], left,btfile);
         BT_nodeWrite(currentRRN, current, btfile);
+        free(newRight);
+        free(current);
+        free(left);
         return promoted;
     }
     //Com split apenas na pagina inferior
@@ -310,7 +314,9 @@ trio BT_insertAux(FILE* btfile, BT_HEADER *bth, int currentRRN, trio reg){
     BT_nodeWrite(current->filhos[nextPage], left, btfile);
     BT_nodeWrite(currentRRN, current, btfile);
     BT_nodeWrite(bth->proxRRN++, newRight ,btfile);
-    //bth->nroChaves++;
+    free(newRight);
+    free(current);
+    free(left);
     return makeTrio(-1, -1 ,-1);
 }
 
@@ -359,5 +365,8 @@ void BT_insert(FILE *btFile, BT_HEADER *bth, trio reg){
     bth->noRaiz = bth->proxRRN;
     bth->nroChaves++;
     BT_nodeWrite(bth->proxRRN++, newRoot, btFile);
+    free(oldRoot);
+    free(newRight);
+    free(newRoot);
     fflush(btFile);
 }
