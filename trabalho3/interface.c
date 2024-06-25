@@ -155,8 +155,14 @@ void logList(FILE* bin, HEADER *h, char *name){
 }
 
 
+void insertWithBtree(FILE *bin, FILE *bt, BT_HEADER *bth, HEADER *h, PLAYER *p){
+    int64_t offset = insertPlayer(bin, h, p);
+    BT_insert(bt, bth, makeTrio(p->id, offset, -1));
+}
+
+
 void selectWithBtree(FILE *bin, FILE *btree, BT_HEADER *bth, HEADER *h,int numOfParameters, char **fields, char **values){
-        if(h->status == '0'){
+    if(h->status == '0'){
         printf("Falha no processamento do arquivo.\n");
         return;
     }
@@ -179,14 +185,15 @@ void selectWithBtree(FILE *bin, FILE *btree, BT_HEADER *bth, HEADER *h,int numOf
         }
         return;
     }
-    while(h->offset > offset){ //Itera sobre o arquivo
+    while(h->offset > offset && !feof(bin)){ //Itera sobre o arquivo
         PLAYER *p = playerFromBin(bin, NO_SEEK);
         if(checkPlayer(p, numOfParameters, fields, values)){
             playerPrint(p);
             flagFound = true;
             if(searchForId)
                 break;
-        }
+
+        }   
         offset += playerTamanho(p, true);
         playerFree(&p);
     }

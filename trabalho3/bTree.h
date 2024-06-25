@@ -1,3 +1,8 @@
+/*
+================================================
+Arquivo header da arvore-B
+================================================
+*/
 #ifndef H_BTREE
     #define H_BTREE
     #include<stdbool.h>

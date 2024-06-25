@@ -251,9 +251,9 @@ int* idFromBin(FILE* fd, int64_t offset){
 
 PLAYER* playerFromBin(FILE*fd, int64_t offset){
     //Extrai uma struct de um binario no offset parametro
-    char regBuffer[128];
+    char regBuffer[512];
     char *tempPtr;
-    char fieldBuffer[64]; //buffers teporarios
+    char fieldBuffer[256]; //buffers teporarios
     PLAYER* p = playerInit();
     if(offset != NO_SEEK) //Se o arquivo ja esta no offset, evita um seek
         fseek(fd, offset, SEEK_SET);

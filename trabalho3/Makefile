@@ -17,3 +17,12 @@ clearBin:
 envdo:
 	gcc player.c interface.c utils.c index.c binFile.c bTree.c main.c -o ./env/main -g -march=native
 	cp -r arquivos/* ./env
+agr:
+	cp indice8-antes.bin indice8.bin
+	cp binario8antes.bin binario8.bin
+	make all
+	./main < 8.in
+	xxd binario8.bin > mybin.txt
+	xxd binario8Org.bin > orgbin.txt
+	xxd indice8.bin > ind.txt
+	xxd indice8-antes.bin > orgInd.txt

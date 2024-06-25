@@ -25,4 +25,6 @@ Essecialmente, toda interacao com a base eh feita por este header
     INDEX* createIndex(FILE* bin, HEADER* h, char* indexName);//Craicao de indice a partir de binario
     void logList(FILE* bin, HEADER *h, char *name);//Funcao de debug
     BT_HEADER* createBtree(FILE *data, char *filename, HEADER *h);
+    void selectWithBtree(FILE *bin, FILE *btree, BT_HEADER *bth, HEADER *h,int numOfParameters, char **fields, char **values);
+    void insertWithBtree(FILE *bin, FILE *bt, BT_HEADER *bth, HEADER *h, PLAYER *p);
 #endif
